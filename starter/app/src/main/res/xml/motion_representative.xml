@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- A transition describes an animation via start and end state -->
+    <Transition
+        app:constraintSetStart="@+id/start"
+        app:constraintSetEnd="@+id/end"
+        app:duration="2000">
+       <OnClick
+            app:targetId="@id/search_title"
+            app:clickAction="toggle" />
+
+        <KeyFrameSet>
+            <KeyAttribute
+                app:framePosition="50"
+                app:motionTarget="@+id/search_title"
+                app:drawableEndCompat="@drawable/ic_arrow_left"
+                />
+        </KeyFrameSet>
+    </Transition>
+
+<!--    <Transition-->
+<!--        app:constraintSetStart="@+id/start"-->
+<!--        app:constraintSetEnd="@id/end"-->
+<!--        app:motionInterpolator="easeInOut">-->
+<!--        <OnSwipe-->
+<!--            app:dragDirection="dragUp"-->
+<!--            app:touchAnchorId="@id/representative_recyclerView" />-->
+<!--    </Transition>-->
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:id="@+id/search_title"
+            app:drawableEndCompat="@drawable/ic_arrow_down"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <Constraint
+            android:id="@+id/address_line_1"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/search_title"
+            />
+
+        <Constraint
+            android:id="@+id/address_line_2"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/address_line_1"/>
+
+        <Constraint
+            android:id="@+id/city"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/state"
+            app:layout_constraintTop_toBottomOf="@id/address_line_2"/>
+
+        <Constraint
+            android:id="@id/state"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/city"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/city"
+            app:layout_constraintBottom_toBottomOf="@id/city"/>
+
+        <Constraint
+            android:id="@+id/zip"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/city"
+            app:layout_constraintTop_toBottomOf="@id/city" />
+
+        <Constraint
+            android:id="@+id/button_search"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/zip"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <Constraint
+            android:id="@+id/button_location"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/search_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+    </ConstraintSet>
+
+    <!-- Constraints to apply at the end of the animation -->
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@+id/search_title"
+            app:drawableEndCompat="@drawable/ic_arrow_up"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <Constraint
+            android:id="@+id/address_line_1"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/search_title"/>
+
+        <Constraint
+            android:id="@+id/address_line_2"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/address_line_1"/>
+
+        <Constraint
+            android:id="@+id/city"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/state"
+            app:layout_constraintTop_toBottomOf="@id/address_line_2"/>
+
+        <Constraint
+            android:id="@id/state"
+            android:visibility="visible"
+            app:layout_constraintStart_toEndOf="@id/city"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/city"
+            app:layout_constraintBottom_toBottomOf="@id/city"/>
+
+        <Constraint
+            android:id="@+id/zip"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/city"
+            app:layout_constraintTop_toBottomOf="@id/city"/>
+
+        <Constraint
+            android:id="@+id/button_search"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@id/zip"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <Constraint
+            android:id="@+id/button_location"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/button_search"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+    </ConstraintSet>
+
+</MotionScene>

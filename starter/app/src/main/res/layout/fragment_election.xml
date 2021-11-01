@@ -4,15 +4,137 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- TODO: Add node to connect Election ViewModel -->
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.example.android.politicalpreparedness.election.ElectionsViewModel" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.example.android.politicalpreparedness.MainActivity">
 
+        <TextView
+            android:id="@+id/upcoming_election_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_medium"
+            android:singleLine="true"
+            android:text="@string/upcoming_elections"
+            android:textAlignment="center"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:title="test" />
+
         <!-- TODO: Add Upcoming Election Recycler and Header -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/upcoming_election_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:visibility="@{viewModel.errorFromDataBase ? View.GONE : View.VISIBLE}"
+            app:electItems="@{viewModel.upcomingElections}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/saved_election_textView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/upcoming_election_textView"
+            app:layout_constraintVertical_bias="0.0" />
 
         <!-- TODO: Add Saved Election Recycler and Header -->
+
+        <TextView
+            android:id="@+id/saved_election_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:layout_marginStart="@dimen/margin_normal"
+            android:layout_marginEnd="@dimen/margin_normal"
+            android:layout_marginBottom="@dimen/margin_normal"
+            android:padding="@dimen/padding_medium"
+            android:singleLine="true"
+            android:text="@string/saved_elections"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.51"
+            tools:title="test" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/saved_election_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:visibility="@{viewModel.emptySavedElectionList ? View.GONE : View.VISIBLE}"
+            app:electItems="@{viewModel.savedElections}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/saved_election_textView"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/loading_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fadeView="@{viewModel.loadingData}"
+            app:constraint_referenced_ids="upcoming_election_recyclerView,
+            saved_election_recyclerView" />
+
+        <ImageView
+            android:id="@+id/db_connection_error_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fadeVisible="@{viewModel.errorFromDataBase}"
+            android:gravity="center"
+            android:src="@drawable/noun_database_error_4244067"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/network_connection_error_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fadeVisible="@{viewModel.connectionError}"
+            android:gravity="center"
+            android:src="@drawable/ic_connection_error"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fadeVisible="@{viewModel.loadingData}"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/empty_saved_election_list_img"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fadeVisible="@{viewModel.emptySavedElectionList}"
+            android:gravity="center"
+            android:src="@drawable/noun_file_3411733"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="0.8:3.5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/saved_election_textView"
+            app:tint="@color/gray_50" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

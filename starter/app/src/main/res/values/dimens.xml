@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="default_padding">8dp</dimen>
+    <dimen name="padding_medium">8dp</dimen>
+    <dimen name="padding_small">3dp</dimen>
 
-    <!-- TODO: Add necessary dimension values -->s
+    <dimen name="margin_large">16dp</dimen>
+    <dimen name="margin_normal">8dp</dimen>
+    <dimen name="margin_small">4dp</dimen>
 
 </resources>

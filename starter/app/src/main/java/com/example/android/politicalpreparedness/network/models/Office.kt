@@ -10,7 +10,7 @@ data class Office (
 ) {
     fun getRepresentatives(officials: List<Official>): List<Representative> {
         return this.officials.map { index ->
-            Representative(officials[index], this)
+            Representative(official = officials[index], office = this)
         }
     }
 }
