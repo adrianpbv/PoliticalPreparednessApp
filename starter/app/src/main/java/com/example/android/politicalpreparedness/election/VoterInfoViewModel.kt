@@ -54,7 +54,7 @@ class VoterInfoViewModel(
         }else{
             result.value = null
             _isDataLoadingError.value = true
-            showSnackBarInt.value = R.string.loading_voteInfo_error
+            showSnackBarInt.value = R.string.loading_data_error
         }
         return result
     }
@@ -68,7 +68,7 @@ class VoterInfoViewModel(
         }else{
             result.value = null
             _isDataLoadingError.value = true
-            showSnackBarInt.value = R.string.loading_voteInfo_error
+            showSnackBarInt.value = R.string.loading_data_error
         }
         return result
     }

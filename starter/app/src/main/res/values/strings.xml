@@ -28,11 +28,10 @@
 
     <!--    Error messages      -->
     <string name="networkError">A network error occurred</string>
-    <string name="loading_voteInfo_error">Error while loading the information</string>
+    <string name="loading_data_error">Error while loading the data</string>
     <string name="election_toolbar_error">Election name</string>
     <string name="location_required_error">Enable the location services to get the current location.</string>
     <string name="get_current_location_error">Something went wrong when getting the current location</string>
-    <string name="loading_representatives_error">@string/loading_voteInfo_error</string>
     <string name="missed_data">Please fill out the required fields</string>
     <string name="permission_denied">Grant the location permission in order to get the current location</string>
     <string name="search_by_address">Representative by address</string>

@@ -34,35 +34,6 @@ class PoliticalPreparednessApp: Application() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
         delayedInit()
-
-        val koinModules = module {
-            viewModel {
-                ElectionsViewModel(
-                    get()
-                )
-            }
-            viewModel {
-                VoterInfoViewModel(
-                    get(),
-                    get(),
-                    get()
-                )
-            }
-            viewModel {
-                RepresentativeViewModel(
-                    get(),
-                    get()
-                )
-            }
-
-            single { Repository(get()) }
-            single { ElectionDatabase.getInstance(this@PoliticalPreparednessApp) }
-
-        }
-        startKoin {
-            androidContext(this@PoliticalPreparednessApp) // set the application Context, inject it when necessary.
-            modules(listOf(koinModules))
-        }
     }
 
     private fun setupRecurringWork() {

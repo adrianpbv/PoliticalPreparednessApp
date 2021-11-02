@@ -2,6 +2,7 @@ package com.example.android.politicalpreparedness.representative
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
@@ -11,15 +12,17 @@ import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.fragment.app.viewModels
 import com.example.android.politicalpreparedness.BuildConfig
 import com.example.android.politicalpreparedness.R
 import com.example.android.politicalpreparedness.databinding.FragmentRepresentativeBinding
-import com.example.android.politicalpreparedness.election.adapter.ElectionListAdapter
 import com.example.android.politicalpreparedness.network.models.Address
 import com.example.android.politicalpreparedness.representative.adapter.RepresentativeListAdapter
 import com.google.android.gms.common.api.ResolvableApiException
@@ -29,14 +32,15 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.base.BaseFragment
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import java.util.Locale
+import java.util.*
 
 class RepresentativeFragment : BaseFragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    override val _viewModel: RepresentativeViewModel by viewModel()
+    override val _viewModel by viewModels<RepresentativeViewModel>() {
+        RepresentativeViewModelFactory(requireContext().applicationContext as Application)
+    }
     private lateinit var binding: FragmentRepresentativeBinding
     private lateinit var listAdapter: RepresentativeListAdapter
 
@@ -57,21 +61,24 @@ class RepresentativeFragment : BaseFragment() {
     }
 
     private var resultLauncherForegroundLocation = registerForActivityResult(
-    ActivityResultContracts.RequestPermission()
+        ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted){
+        if (isGranted) {
             checkDeviceLocationAndGetLocation()
-        }
-        else showSnackBarAppSettings()
+        } else showSnackBarAppSettings()
     }
 
     //TODO: Declare ViewModel
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
-        binding = FragmentRepresentativeBinding.inflate(inflater, container,false)
+        binding = FragmentRepresentativeBinding.inflate(inflater, container, false)
+
+        binding.lifecycleOwner = this
         binding.viewModel = _viewModel
 
         setupListAdapter()
@@ -94,20 +101,23 @@ class RepresentativeFragment : BaseFragment() {
             true
         } else {
             resultLauncherForegroundLocation.launch(
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            )
             false
         }
     }
 
-    private fun isPermissionGranted() : Boolean =
-        checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    private fun isPermissionGranted(): Boolean =
+        checkSelfPermission(
+            requireContext(),
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
     private fun getLocation() {
-        if (checkLocationPermissions()){
+        if (checkLocationPermissions()) {
             checkDeviceLocationAndGetLocation()
         }
     }
-
 
 
     /**
@@ -115,7 +125,7 @@ class RepresentativeFragment : BaseFragment() {
      *  the opportunity to turn on location services within the app.
      */
     @SuppressLint("MissingPermission")
-    fun checkDeviceLocationAndGetLocation(){
+    fun checkDeviceLocationAndGetLocation() {
         // check that the device's location is on if not show a dialog to activate it.
 
         val locationRequest = LocationRequest.create().apply {
@@ -140,7 +150,7 @@ class RepresentativeFragment : BaseFragment() {
                         IntentSenderRequest.Builder(exception.resolution).build()
                     resultLauncherLocationService.launch(intentSenderRequest)
                 } catch (sendEx: IntentSender.SendIntentException) {
-                    Timber.e( "Error getting location settings resolution: %s", sendEx.message)
+                    Timber.e("Error getting location settings resolution: %s", sendEx.message)
                 }
             }
         }
@@ -149,8 +159,9 @@ class RepresentativeFragment : BaseFragment() {
         // if so you will want to add the geofence.
         locationSettingsResponseTask.addOnCompleteListener {
             if (it.isSuccessful) {
-                Timber.i( "Successful %s", locationSettingsResponseTask.result.toString())
-                fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+                Timber.i("Successful %s", locationSettingsResponseTask.result.toString())
+                fusedLocationClient =
+                    LocationServices.getFusedLocationProviderClient(requireActivity())
                 fusedLocationClient.lastLocation
                     .addOnSuccessListener { location ->
                         _viewModel.searchRepresentative(geoCodeLocation(location))
@@ -167,7 +178,7 @@ class RepresentativeFragment : BaseFragment() {
      * Helper function to change the lat/long location to a human readable street address
      */
     private fun geoCodeLocation(location: Location?): Address? {
-        if(location != null) {
+        if (location != null) {
             val geocoder = Geocoder(context, Locale.getDefault())
             return geocoder.getFromLocation(location.latitude, location.longitude, 1)
                 .map { address ->
@@ -180,7 +191,7 @@ class RepresentativeFragment : BaseFragment() {
                     )
                 }
                 .first()
-        }else {
+        } else {
             _viewModel.showErrorMessage.value = R.string.get_current_location_error
             return null
         }

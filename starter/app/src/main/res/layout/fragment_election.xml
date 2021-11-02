@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- TODO: Add node to connect Election ViewModel -->
     <data>
 
         <import type="android.view.View" />
@@ -35,14 +34,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_normal"
-            android:visibility="@{viewModel.errorFromDataBase ? View.GONE : View.VISIBLE}"
             app:electItems="@{viewModel.upcomingElections}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/saved_election_textView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/upcoming_election_textView"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.0"
+            tools:itemCount="4"
+            tools:listitem="@layout/election_item"/>
+
+<!--                    android:visibility="@{viewModel.errorFromDataBase ? View.GONE : View.VISIBLE}"
+-->
 
         <!-- TODO: Add Saved Election Recycler and Header -->
 
@@ -62,30 +65,35 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.51"
-            tools:title="test" />
+            app:layout_constraintVertical_bias="0.51"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/saved_election_recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_normal"
-            android:visibility="@{viewModel.emptySavedElectionList ? View.GONE : View.VISIBLE}"
-            app:electItems="@{viewModel.savedElections}"
+            android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/saved_election_textView"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.0"
+            tools:itemCount="4"
+            tools:listitem="@layout/election_item"/>
+
+<!--        android:visibility="@{viewModel.emptySavedElectionList ? View.GONE : View.VISIBLE}"
+            app:electItems="@{viewModel.savedElections}"-->
+
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/loading_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fadeView="@{viewModel.loadingData}"
-            app:constraint_referenced_ids="upcoming_election_recyclerView,
-            saved_election_recyclerView" />
+            android:visibility="@{viewModel.loadingData || viewModel.errorFromDataBase || viewModel.connectionError ? View.GONE : View.VISIBLE}"
+            app:constraint_referenced_ids="upcoming_election_textView,upcoming_election_recyclerView,
+            saved_election_textView, saved_election_recyclerView,
+            empty_saved_election_list_img" />
 
         <ImageView
             android:id="@+id/db_connection_error_img"
@@ -97,7 +105,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/gray_50"/>
 
         <ImageView
             android:id="@+id/network_connection_error_img"

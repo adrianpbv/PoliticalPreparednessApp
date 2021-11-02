@@ -13,8 +13,8 @@
 
     <!-- TODO: Add necessary styles -->
     <style name="elections_style" parent="AppTheme">
-        <item name="android:layout_marginLeft">8dp</item>
-        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_marginLeft">@dimen/margin_normal</item>
+        <item name="android:layout_marginRight">@dimen/margin_normal</item>
         <item name="android:padding">2dp</item>
         <item name="android:textSize">14sp</item>
     </style>

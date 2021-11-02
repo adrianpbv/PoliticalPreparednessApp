@@ -1,5 +1,6 @@
 package com.example.android.politicalpreparedness.network.models
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -21,12 +22,13 @@ data class SavedElectionEntity(
     @PrimaryKey val idSavedElection: Int
 )
 
+@Parcelize
 data class Election(
     val id: Int,
     val name: String,
     val electionDay: Date,
     val division: Division
-){
+): Parcelable{
     fun toEntityDatabase(): ElectionEntity =
         ElectionEntity(
                 id = this.id,

@@ -1,11 +1,9 @@
 package com.example.android.politicalpreparedness.representative
 
 import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.android.politicalpreparedness.R
+import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.network.models.Address
 import com.example.android.politicalpreparedness.network.models.RepresentativeResponse
 import com.example.android.politicalpreparedness.repository.Repository
@@ -15,11 +13,11 @@ import com.udacity.project4.base.BaseViewModel
 import kotlinx.coroutines.launch
 
 class RepresentativeViewModel(
-    app: Application,
-    private val repository: Repository
+    app: Application
 ) : BaseViewModel(app) {
 
-    //TODO: Establish live data for representatives and address
+    private val database = ElectionDatabase.getInstance(app)
+    private val repository = Repository(database)
 
     private val address = MutableLiveData<Address>()
     private val representativeResponse = Transformations.switchMap(address) {
@@ -59,15 +57,17 @@ class RepresentativeViewModel(
     init {
         stateInt.value = 0
     }
-    //TODO: Create function to fetch representatives from API from a provided address
 
+    /**
+     * Function to fetch representatives from API from a provided address
+     */
     private fun getRepresentativeList(response: Result<RepresentativeResponse>): List<Representative> {
         return if (response is Result.Success) {
             response.data.offices.flatMap {
                 it.getRepresentatives(response.data.officials)
             }
         } else {
-            showErrorMessage.postValue(R.string.loading_representatives_error)
+            showErrorMessage.postValue(R.string.loading_data_error)
             emptyList()
         }
     }
@@ -83,7 +83,7 @@ class RepresentativeViewModel(
     }
 
     /**
-     *
+     * Function that takes the address provided by the user
      */
     fun inputAddress(selectedState: String) {
         val new_line1 = lineOne.value
@@ -121,4 +121,16 @@ class RepresentativeViewModel(
         zip.value = currentLocation.zip
     }
 
+}
+
+class RepresentativeViewModelFactory(
+    private val app: Application
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(RepresentativeViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return RepresentativeViewModel(app) as T
+        }
+        throw IllegalArgumentException("Unable to construct viewmodel")
+    }
 }

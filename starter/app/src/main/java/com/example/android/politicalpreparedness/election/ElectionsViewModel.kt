@@ -24,21 +24,22 @@ class ElectionsViewModel(application: Application) : BaseViewModel(application) 
     private val repository = Repository(database)
 
 
-    private val _navigateDetailElections = MutableLiveData<Int>()
-    val navigateDetailElections: LiveData<Int> = _navigateDetailElections
+    private val _navigateDetailElections = MutableLiveData<Int?>()
+    val navigateDetailElections: LiveData<Int?> = _navigateDetailElections
 
-    //TODO: Create live data val for upcoming elections
-//    private val _upcomingElections = MutableLiveData<List<Election>>()
-    lateinit var upcomingElectionsDbase: LiveData<Result<List<Election>>>
+    //LiveData for upcoming elections
+    private val upcomingElectionsDbase = repository.getElections()//MutableLiveData<Result<List<Election>>>()
 
     val upcomingElections: LiveData<List<Election>> = Transformations.map(upcomingElectionsDbase) {
-        if (it is Result.Success)
+        if (it is Result.Success) {
+            Timber.i("Upcoming Elections LiveData %d", it.data.size)
             it.data
-        else
+        } else
             emptyList()
     }
 
-    lateinit var savedElectionsDbase: LiveData<Result<List<Election>>>
+    //LiveData for saved elections
+    private val savedElectionsDbase = repository.getSavedElections()//MutableLiveData<Result<List<Election>>>()
 
     val savedElections: LiveData<List<Election>> = Transformations.map(savedElectionsDbase){
         if (it is Result.Success){
@@ -55,50 +56,44 @@ class ElectionsViewModel(application: Application) : BaseViewModel(application) 
     val loadingData: LiveData<Boolean> = _loadingData
 
     val errorFromDataBase = Transformations.map(upcomingElectionsDbase) {
-        it is Result.Error
+        if(it is Result.Error) {
+            showErrorMessage.value = R.string.loading_data_error
+            true
+        }else false
     }
 
-    val emptySavedElectionList = Transformations.map(upcomingElectionsDbase){
+    val emptySavedElectionList = Transformations.map(savedElectionsDbase){
         it is Result.Success && it.data.isEmpty()
     }
 
-
-    //TODO: Create live data val for saved elections
-    //private val _savedElections = MutableLiveData<List<Election>>()
-
-    // get() = _savedElections
-
     init {
+        _loadingData.value = true
         _connectionError.value = false
         viewModelScope.launch {
             try {
                 // refresh the database with new upcoming election
                 repository.refreshElections()
-                getElectionsFromDataBase()
-            } catch (e: UnknownHostException) {
+                //_loadingData.value = false
+            } catch (error: UnknownHostException) {
                 // catching the network error in the viewModel to show an informative error message
+                Timber.e(error)
                 _connectionError.value = repository.isElectionTableEmpty() == 0
                 showErrorMessage.value = R.string.networkError
             } catch (error: Exception) {
                 Timber.e(error)
+                _connectionError.value = repository.isElectionTableEmpty() == 0
+                showErrorMessage.value = R.string.networkError
             }
+            _loadingData.value = false // The loading state has ended so the app is in another state
         }
     }
 
-    //TODO: Create val and functions to populate live data for upcoming elections from the API and saved elections from local database
-    fun getElectionsFromDataBase() {
-        _loadingData.value = true
-        viewModelScope.launch {
-            delay(2000)
-            upcomingElectionsDbase = repository.getElections()
-            savedElectionsDbase = repository.getSavedElections()
-            _loadingData.value = false
-        }
-    }
-
-    //TODO: Create functions to navigate to saved or upcoming election voter info
     fun navigateToDetailsElection(idElection: Int) {
         _navigateDetailElections.value = idElection
+    }
+
+    fun navigationDetailElectionCompleted(){
+        _navigateDetailElections.value = null
     }
 
 }

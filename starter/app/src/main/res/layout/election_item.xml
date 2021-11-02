@@ -1,47 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <layout xmlns:tools="http://schemas.android.com/tools"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-        <data>
+    <data>
 
-            <variable
-                name="election"
-                type="com.example.android.politicalpreparedness.network.models.Election"/>
+        <variable
+            name="election"
+            type="com.example.android.politicalpreparedness.network.models.Election" />
 
-            <variable
-                name="clickListener"
-                type="com.example.android.politicalpreparedness.election.adapter.ElectionClickListener" />
+        <variable
+            name="clickListener"
+            type="com.example.android.politicalpreparedness.election.adapter.ElectionClickListener" />
 
-        </data>
+    </data>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:onClick="@{() -> clickListener.onClick(election.id)}">
+
+
+        <TextView
+            android:id="@+id/election_name"
+            style="@style/elections_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_normal">
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Election name" />
 
+        <TextView
+            android:id="@+id/election_date"
+            style="@style/elections_style"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/election_name"
+            tools:text="Election date" />
 
-            <TextView
-                android:id="@+id/election_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/elections_style"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Election name"/>
-
-            <TextView
-                android:id="@+id/election_date"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/elections_style"
-                android:layout_marginTop="@dimen/margin_small"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/election_name"
-                tools:text="Election date"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </layout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginStart="@dimen/margin_large"
+            android:layout_marginEnd="@dimen/margin_large"
+            android:background="@color/gray_50"
+            app:layout_constraintTop_toBottomOf="@id/election_date" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

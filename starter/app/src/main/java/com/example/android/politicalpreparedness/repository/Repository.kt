@@ -6,12 +6,13 @@ import androidx.lifecycle.Transformations
 import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.network.CivicsApi
 import com.example.android.politicalpreparedness.network.models.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import com.example.android.politicalpreparedness.utils.Result
 import com.example.android.politicalpreparedness.utils.Result.Success
 import com.example.android.politicalpreparedness.utils.asSavedElectionEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import timber.log.Timber
 import java.net.UnknownHostException
@@ -29,7 +30,7 @@ class Repository(private val database: ElectionDatabase) {
      * Refresh the elections in the dataBase with data from the network
      */
     suspend fun refreshElections() {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             val elections = CivicsApi.retrofitService.getElections()
             database.electionDao.insertAll(*elections.asDataBaseEntity())
         }
@@ -38,12 +39,12 @@ class Repository(private val database: ElectionDatabase) {
     /**
      * Get LiveData with all the Elections from the database
      */
-    fun getElections(): LiveData<Result<List<Election>>>{
-        try{
+    fun getElections(): LiveData<Result<List<Election>>> {
+        try {
             return Transformations.map(database.electionDao.getAllElections()) {
                 Success(it.asDomainModel()) // data is a list of Elections
             }
-        }catch(exception: Exception){
+        } catch (exception: Exception) {
             Timber.e(exception)
             val elections = MutableLiveData<Result<List<Election>>>()
             elections.value = Result.Error(exception)
@@ -54,17 +55,27 @@ class Repository(private val database: ElectionDatabase) {
     /**
      * Get an election by its Id
      */
-    suspend fun getElectionById(electionId: Int): Election?{
-        withContext(Dispatchers.IO){
+    suspend fun getElectionById(electionId: Int): Election? {
+        withContext(Dispatchers.IO) {
             return@withContext database.electionDao.getElectionById(electionId)?.toDomainModel()
         }
         return null
     }
 
+    private suspend fun electionTableEmpty(): Int = database.electionDao.isElectionTableEmpty()
+
     /**
      * Function that determines whether there are elections in the database or not
      */
-    suspend fun isElectionTableEmpty(): Int = database.electionDao.isElectionTableEmpty()
+    suspend fun isElectionTableEmpty(): Int {
+        var isTableEmpty = 0
+        withContext(Dispatchers.IO) {
+            isTableEmpty = async {
+                electionTableEmpty()
+            }.await()
+        }
+        return isTableEmpty
+    }
 
 
     /**
@@ -90,10 +101,10 @@ class Repository(private val database: ElectionDatabase) {
      */
     fun getSavedElections(): LiveData<Result<List<Election>>> {
         try {
-            return Transformations.map(database.electionDao.getSavedElections()){
+            return Transformations.map(database.electionDao.getSavedElections()) {
                 Success(it.asDomainModel())
             }
-        }catch(exception: Exception){
+        } catch (exception: Exception) {
             Timber.e(exception)
             val elections = MutableLiveData<Result<List<Election>>>()
             elections.value = Result.Error(exception)
@@ -104,8 +115,8 @@ class Repository(private val database: ElectionDatabase) {
     /**
      * Save an election through inserting its id into the saved_table
      */
-    suspend fun setElectionAsSaved(id: Int){
-        withContext(Dispatchers.IO){
+    suspend fun setElectionAsSaved(id: Int) {
+        withContext(Dispatchers.IO) {
             database.electionDao.insertSavedElection(id.asSavedElectionEntity())
         }
     }
@@ -113,8 +124,8 @@ class Repository(private val database: ElectionDatabase) {
     /**
      * Unsaved an elections by deleting its Id in the savedElection table
      */
-    suspend fun deleteSavedElection(id: Int){
-        withContext(Dispatchers.IO){
+    suspend fun deleteSavedElection(id: Int) {
+        withContext(Dispatchers.IO) {
             database.electionDao.unSavedElection(id)
         }
     }
@@ -131,19 +142,25 @@ class Repository(private val database: ElectionDatabase) {
     /**
      * Get the representatives by address
      */
-    suspend fun getRepresentative(address: String){
+    suspend fun getRepresentative(address: String) {
         observeReprensentative.value = Result.Loading
         delay(2000)
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             try {
-                observeReprensentative.postValue(Success(CivicsApi.retrofitService.getRepresentatives(address)))
-            }catch (errorHttp: HttpException){
+                observeReprensentative.postValue(
+                    Success(
+                        CivicsApi.retrofitService.getRepresentatives(
+                            address
+                        )
+                    )
+                )
+            } catch (errorHttp: HttpException) {
                 observeReprensentative.postValue(Result.Error(errorHttp))
                 Timber.e(errorHttp)
-            }catch (errorHost: UnknownHostException){
+            } catch (errorHost: UnknownHostException) {
                 observeReprensentative.postValue(Result.Error(errorHost))
                 Timber.e(errorHost)
-            }catch (exc: Exception){
+            } catch (exc: Exception) {
                 observeReprensentative.postValue(Result.Error(exc))
                 Timber.e(exc)
             }
@@ -153,27 +170,28 @@ class Repository(private val database: ElectionDatabase) {
     /**
      * Sync the vote information with observers
      */
-    fun observeVoteInfo(): LiveData<Result<VoterInfoResponse>>{
+    fun observeVoteInfo(): LiveData<Result<VoterInfoResponse>> {
         return observeVoteInfo
     }
 
     /**
      * Looks up information relevant to a voter based on the voter's registered address
      */
-    suspend fun getVoterInfo(address: String, electionId: Int){
+    suspend fun getVoterInfo(address: String, electionId: Int) {
         // Update the LiveData while the information is being downloaded from the network.
         observeVoteInfo.value = Result.Loading
         delay(2000)
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             try {
-                observeVoteInfo.value = Success(CivicsApi.retrofitService.getVoterInfo(address, electionId))
-            }catch (errorHttp: HttpException){
+                observeVoteInfo.value =
+                    Success(CivicsApi.retrofitService.getVoterInfo(address, electionId))
+            } catch (errorHttp: HttpException) {
                 observeVoteInfo.value = Result.Error(errorHttp)
                 Timber.e(errorHttp)
-            }catch (errorHost: UnknownHostException){
+            } catch (errorHost: UnknownHostException) {
                 observeVoteInfo.value = Result.Error(errorHost)
                 Timber.e(errorHost)
-            }catch (error: Exception){
+            } catch (error: Exception) {
                 observeVoteInfo.value = Result.Error(error)
                 Timber.e(error)
             }

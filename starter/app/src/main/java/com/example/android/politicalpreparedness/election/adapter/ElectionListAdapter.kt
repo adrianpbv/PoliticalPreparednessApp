@@ -2,6 +2,7 @@ package com.example.android.politicalpreparedness.election.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.library.baseAdapters.BR
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +29,6 @@ class ElectionViewHolder private constructor(val binding: ElectionItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
     fun bind(clickListener: ElectionClickListener, item: Election) {
-
         binding.clickListener = clickListener
         binding.election = item
         binding.executePendingBindings()

@@ -10,13 +10,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
+import java.util.Date
 
 private const val BASE_URL = "https://www.googleapis.com/civicinfo/v2/"
 
 private val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
+    .add(Date::class.java, Rfc3339DateJsonAdapter()) // adapters for Java Date, parse the date string to a date object
     .add(ElectionAdapter()) // adapter for the Division field in the model
-    .add(Rfc3339DateJsonAdapter()) // adapters for Java Date, parse the date string to a date object
+    .add(KotlinJsonAdapterFactory())
     .build()
 
 private val retrofit = Retrofit.Builder()
@@ -47,13 +48,6 @@ interface CivicsApiService {
         @Query("electionID") idElection: Int
     ): VoterInfoResponse
 
-    @GET("voterinfo")
-    suspend fun getVoterInfo(
-        @Query("address") address: String,
-        @Query("electionId") electionId: String,
-        @Query("officialOnly") official: Boolean
-    ): String
-
     /**
      * Looks up political geography and representative information
      */
@@ -62,10 +56,6 @@ interface CivicsApiService {
         @Query("address") address: String
     ): RepresentativeResponse
 
-    @GET("representatives/ocdId")
-    suspend fun getRepresentByDivision(
-        @Query("ocdId") division: String // optional parameter
-    ): String
 }
 
 object CivicsApi {
