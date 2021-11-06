@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import kotlinx.android.parcel.Parcelize
+import java.text.SimpleDateFormat
 import java.util.*
 
 @Entity(tableName = "election_table")
@@ -36,7 +37,15 @@ data class Election(
             electionDay = this.electionDay,
             division = this.division
         )
+
+    fun getFormattedDate(): String{
+        return SimpleDateFormat(
+            "MMMM dd, yyyy",
+            Locale.getDefault()
+        ).format(electionDay)
+    }
 }
+// "yyyy-MMM-dd"
 
 fun ElectionEntity.toDomainModel(): Election = Election(
     id= this.id,

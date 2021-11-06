@@ -18,7 +18,7 @@ interface ElectionDao {
 
     // Select single election query
     @Query("SELECT * FROM election_table WHERE id = :electionId")
-    suspend fun getElectionById(electionId: Int): ElectionEntity?
+    fun getElectionById(electionId: Int): LiveData<ElectionEntity?>
 
     // Delete query
     @Query("DELETE FROM election_table WHERE id = :electionId")
@@ -46,4 +46,7 @@ interface ElectionDao {
 
     @Query("DELETE FROM saved_election_table WHERE idSavedElection = :id")
     suspend fun unSavedElection(id: Int)
+
+    @Query("SELECT COUNT(*) FROM saved_election_table")
+    fun isSavedElectionTableEmpty(): LiveData<Int>
 }

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toolbar
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
@@ -13,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.android.politicalpreparedness.R
 import com.example.android.politicalpreparedness.election.adapter.ElectionListAdapter
+import com.example.android.politicalpreparedness.network.models.Address
 import com.example.android.politicalpreparedness.network.models.Election
 
 /**
@@ -20,9 +22,11 @@ import com.example.android.politicalpreparedness.network.models.Election
  * election
  */
 @BindingAdapter("linkVoteInfo")
-fun voteInfoLink(view: View, uriAddress: String) {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uriAddress))
-    view.context.startActivity(intent)
+fun voteInfoLink(view: View, uriAddress: String?) {
+    uriAddress?.let {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uriAddress))
+        view.context.startActivity(intent)
+    }
 }
 
 /**
@@ -34,6 +38,17 @@ fun changeButtonState(buttonView: Button, isSaved: Boolean) {
         buttonView.text = buttonView.context.getText(R.string.unfollow)
     else
         buttonView.text = buttonView.context.getText(R.string.follow)
+}
+
+/**
+ * Inform the user if the election physical address is not available
+ */
+@BindingAdapter("addressText")
+fun setAddressText(textView: TextView, address: Address?) {
+    if (address == null) {
+        textView.text = textView.context.getText(R.string.address_unavailable)
+    } else
+        textView.text = textView.context.getText(R.string.address)
 }
 
 /**
@@ -53,7 +68,7 @@ fun hideViewIfNoContent(view: View, any: Any?) {
 
 /**
  * Set the toolbar text according to the [Election]
- * If the Election is null or an error ocurred the toolbar
+ * If the Election is null or an error occurred the toolbar
  * should show an appropriate state by changing its text and color
  */
 @BindingAdapter("toolbarText")
@@ -70,7 +85,7 @@ fun setToolbarText(toolbar: Toolbar, electionName: String?) {
  * Use this binding adapter to show and hide the views using boolean variables
  */
 @BindingAdapter("android:fadeVisible")
-fun setFadeVisible(view: View, visible: Boolean? = true) {
+fun setFadeVisible(view: View, visible: Boolean?) {
     if (view.tag == null) {
         view.tag = true
         view.visibility = if (visible == true) View.VISIBLE else View.GONE

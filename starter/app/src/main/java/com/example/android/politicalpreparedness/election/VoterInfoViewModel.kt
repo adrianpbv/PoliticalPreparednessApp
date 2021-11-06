@@ -1,128 +1,162 @@
 package com.example.android.politicalpreparedness.election
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewModelScope
+import android.app.Application
+import androidx.lifecycle.*
+import com.example.android.politicalpreparedness.R
+import com.example.android.politicalpreparedness.database.ElectionDatabase
+import com.example.android.politicalpreparedness.network.models.Address
+import com.example.android.politicalpreparedness.network.models.AdministrationBody
 import com.example.android.politicalpreparedness.network.models.Election
+import com.example.android.politicalpreparedness.network.models.State
 import com.example.android.politicalpreparedness.repository.Repository
 import com.example.android.politicalpreparedness.utils.Result
-import android.app.Application
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import com.example.android.politicalpreparedness.R
-import com.example.android.politicalpreparedness.network.models.AdministrationBody
-import com.example.android.politicalpreparedness.network.models.VoterInfoResponse
-import com.example.android.politicalpreparedness.network.models.toDomainModel
 import com.udacity.project4.base.BaseViewModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class VoterInfoViewModel(
     app: Application,
-    private val repository: Repository,
-    private val electionId: Int) : BaseViewModel(app) {
+    private val electionId: Int
+) : BaseViewModel(app) {
 
-    private val voteInfo = repository.observeVoteInfo()
-    val electionAdministrationBody: LiveData<AdministrationBody?> = Transformations.switchMap(voteInfo){
-        getAdministrationBody(it)
-    }
-    val dataElection: LiveData<Election?> = Transformations.switchMap(voteInfo){
-        getElection(it)
-    }
-    val isSaved : LiveData<Boolean> = Transformations.map(repository.isTheElectionSaved(electionId)){
-        it != 0 // if it is not null, means that it's marked as saved (in the savedTable)
+    private val database = ElectionDatabase.getInstance(app)
+    private val repository = Repository(database)
+
+    val isSaved: LiveData<Boolean> =
+        Transformations.map(repository.isTheElectionSaved(electionId)) {
+            it != 0 // if it is not null, means that it's marked as saved (in the savedTable)
+        }
+
+    val election: LiveData<Election?> =
+        Transformations.switchMap(repository.getElectionById(electionId)) {
+            getElectionFromDataBase(it)
+        }
+
+
+    private val voteInfo = Transformations.switchMap(election) {
+        it?.let {
+            // If an error from the database happened so the election will be null and this is not executed
+            // Only the icon error from the dataBase is shown.
+            val address = it.division.state.plus(", " + it.division.country)
+            viewModelScope.launch {
+                repository.getVoterInfo(
+                    address,
+                    electionId
+                ) // LiveData voteInfo is aware of changes
+            }
+        }
+        repository.observeVoteInfo()
     }
 
-    private val _isDataLoadingError = MutableLiveData<Boolean>(false)
-    val isDataLoadingError: LiveData<Boolean>
-            get() = _isDataLoadingError
+    val state: LiveData<State?> = Transformations.map(voteInfo) {
+        if (it is Result.Success) {
+            it.data.state?.get(0)
+        } else
+            null
+    }
 
-    val isLoadingData = Transformations.map(voteInfo){
+    val electionAdministrationBody: LiveData<AdministrationBody> = Transformations.map(state) {
+        it?.electionAdministrationBody
+    }
+
+    val physicalAddress: LiveData<Address?> =
+        Transformations.map(electionAdministrationBody) {
+            it?.physicalAddress
+        }
+
+    val networkError: LiveData<Boolean> = Transformations.map(voteInfo) {
+        if (it is Result.Error) {
+            showErrorMessage.value = R.string.loading_data_error
+        }
+        it is Result.Error
+    }
+
+    private val _dataBaseError = MutableLiveData<Boolean>(false)
+    val dataBaseError: LiveData<Boolean>
+        get() = _dataBaseError
+
+    val isLoadingDataFromNetwork = Transformations.map(voteInfo) {
         it is Result.Loading
     }
-    private lateinit var election: Election
 
-    init {
-        getElectionFromDataBase()
-        getVoteInformation()
-    }
+    private val _isLoadingDataFromDBase = MutableLiveData<Boolean>(true)
+    val isLoadingDataFromDBase: LiveData<Boolean>
+        get() = _isLoadingDataFromDBase
 
-    fun getAdministrationBody(voteInformation: Result<VoterInfoResponse>): LiveData<AdministrationBody?>{
-        val result = MutableLiveData<AdministrationBody?>()
-
-        if (voteInformation is Result.Success){
-            _isDataLoadingError.value = false
-            result.value = voteInformation.data.state?.get(0)?.electionAdministrationBody
-        }else{
-            result.value = null
-            _isDataLoadingError.value = true
-            showSnackBarInt.value = R.string.loading_data_error
+    fun getElectionFromDataBase(electionDB: Result<Election?>): LiveData<Election?> {
+        _isLoadingDataFromDBase.value = true // Show a loading progress while the dataBase operation
+        // is running and ends up in one state(Error or Success)
+        val electionResult = MutableLiveData<Election?>()
+        if (electionDB is Result.Success) {
+            _dataBaseError.value = false
+            electionResult.value = electionDB.data
+        } else {
+            showErrorMessage.value = R.string.loading_data_error
+            _dataBaseError.value = true
+            electionResult.value = null
         }
-        return result
+        _isLoadingDataFromDBase.value = false
+        return electionResult
     }
 
-    fun getElection(voteInformation: Result<VoterInfoResponse>): LiveData<Election?>{
-        val result = MutableLiveData<Election?>()
-
-        if (voteInformation is Result.Success){
-            _isDataLoadingError.value = false
-            result.value = voteInformation.data.electionEntity.toDomainModel()
-        }else{
-            result.value = null
-            _isDataLoadingError.value = true
-            showSnackBarInt.value = R.string.loading_data_error
-        }
-        return result
-    }
-
-    fun getElectionFromDataBase(){
-        viewModelScope.launch {
-            election = repository.getElectionById(electionId)!!
-        }
-    }
-
-    fun getVoteInformation(){
-        if (::election.isInitialized){
-            val address = election.division.state.plus(" ," +  election.division.country)
-            viewModelScope.launch {
-                repository.getVoterInfo(address, electionId) // LiveData voteInfo is aware of changes
-            }
-        }else{
-            _isDataLoadingError.value = true
-        }
-    }
-
-    fun getElectionInfUrl(): String?{
+    fun getElectionInfUrl(): String? {
         val voteInformation = voteInfo.value
-        if (voteInformation is Result.Success){
+        if (voteInformation is Result.Success) {
             return voteInformation.data.state!![0].electionAdministrationBody.electionInfoUrl
         }
         return null
     }
 
-    fun getBallotInfoUrl(): String?{
+    fun getBallotInfoUrl(): String? {
         val voteInformation = voteInfo.value
-        if (voteInformation is Result.Success){
+        if (voteInformation is Result.Success) {
             return voteInformation.data.state!![0].electionAdministrationBody.ballotInfoUrl
         }
         return null
     }
 
-    fun handleSavedElections(){
-        if(isSaved.value == true){
+    fun handleSavedElections() {
+        if (isSaved.value == true) {
             unsaveElection()
-        }else
+        } else
             saveElection()
     }
 
     //TODO: Add var and methods to save and remove elections to local database
-    fun saveElection(){
+    fun saveElection() {
         viewModelScope.launch {
             repository.setElectionAsSaved(electionId)
         }
     }
 
-    fun unsaveElection(){
+    fun unsaveElection() {
         viewModelScope.launch {
             repository.deleteSavedElection(electionId)
         }
+    }
+
+    fun checkPopulatedData() {
+        Timber.i("Election name: %s", election.value?.name)
+        Timber.i("Election Id: %s", election.value?.id)
+        Timber.i(" ****** Testing the State ******")
+        Timber.i("ElectionInfoUrl name: %s", electionAdministrationBody.value?.electionInfoUrl)
+        Timber.i(
+            "Election State name: %s",
+            electionAdministrationBody.value?.physicalAddress?.state
+        )
+        Timber.i("AVAILABLE ADDRESS -->> %s", physicalAddress.value == null)
+    }
+}
+
+class VoterInfoViewModelFactory(
+    private val application: Application,
+    private val electionId: Int
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(VoterInfoViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return VoterInfoViewModel(application, electionId) as T
+        }
+        throw IllegalArgumentException("Unable to construct viewmodel")
     }
 }

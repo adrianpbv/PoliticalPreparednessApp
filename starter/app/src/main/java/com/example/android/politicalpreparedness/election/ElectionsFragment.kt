@@ -23,7 +23,8 @@ class ElectionsFragment : BaseFragment() {
     }
     private lateinit var dataBinding: FragmentElectionBinding
 
-    private lateinit var listAdapter: ElectionListAdapter
+    private lateinit var listAdapterOne: ElectionListAdapter
+    private lateinit var listAdapterTwo: ElectionListAdapter
 
 
     override fun onCreateView(
@@ -39,12 +40,15 @@ class ElectionsFragment : BaseFragment() {
 
         dataBinding.viewModel = _viewModel
 
-        listAdapter = ElectionListAdapter(ElectionClickListener {
+        listAdapterOne = ElectionListAdapter(ElectionClickListener {
+            _viewModel.navigateToDetailsElection(it)
+        })
+        listAdapterTwo = ElectionListAdapter(ElectionClickListener {
             _viewModel.navigateToDetailsElection(it)
         })
 
-        dataBinding.upcomingElectionRecyclerView.adapter = listAdapter
-        dataBinding.savedElectionRecyclerView.adapter = listAdapter
+        dataBinding.upcomingElectionRecyclerView.adapter = listAdapterOne
+        dataBinding.savedElectionRecyclerView.adapter = listAdapterTwo
 
         setupNavigation()
         return dataBinding.root

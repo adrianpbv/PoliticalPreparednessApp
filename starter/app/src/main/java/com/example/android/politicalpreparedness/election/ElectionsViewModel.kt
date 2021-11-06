@@ -9,10 +9,8 @@ import com.example.android.politicalpreparedness.R
 import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.network.models.Election
 import com.example.android.politicalpreparedness.repository.Repository
-import com.example.android.politicalpreparedness.utils.Event
 import com.example.android.politicalpreparedness.utils.Result
 import com.udacity.project4.base.BaseViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.UnknownHostException
@@ -32,7 +30,6 @@ class ElectionsViewModel(application: Application) : BaseViewModel(application) 
 
     val upcomingElections: LiveData<List<Election>> = Transformations.map(upcomingElectionsDbase) {
         if (it is Result.Success) {
-            Timber.i("Upcoming Elections LiveData %d", it.data.size)
             it.data
         } else
             emptyList()
@@ -55,16 +52,14 @@ class ElectionsViewModel(application: Application) : BaseViewModel(application) 
     private val _loadingData = MutableLiveData<Boolean>()
     val loadingData: LiveData<Boolean> = _loadingData
 
-    val errorFromDataBase = Transformations.map(upcomingElectionsDbase) {
+    val errorFromDataBase: LiveData<Boolean> = Transformations.map(upcomingElectionsDbase) {
         if(it is Result.Error) {
             showErrorMessage.value = R.string.loading_data_error
             true
         }else false
     }
 
-    val emptySavedElectionList = Transformations.map(savedElectionsDbase){
-        it is Result.Success && it.data.isEmpty()
-    }
+    val emptySavedElectionTable: LiveData<Boolean> = repository.isSavedElectionTableEmpty()
 
     init {
         _loadingData.value = true
@@ -73,19 +68,18 @@ class ElectionsViewModel(application: Application) : BaseViewModel(application) 
             try {
                 // refresh the database with new upcoming election
                 repository.refreshElections()
-                //_loadingData.value = false
             } catch (error: UnknownHostException) {
                 // catching the network error in the viewModel to show an informative error message
                 Timber.e(error)
                 _connectionError.value = repository.isElectionTableEmpty() == 0
-                showErrorMessage.value = R.string.networkError
+                showErrorMessage.value = R.string.network_error
             } catch (error: Exception) {
                 Timber.e(error)
                 _connectionError.value = repository.isElectionTableEmpty() == 0
-                showErrorMessage.value = R.string.networkError
+                showErrorMessage.value = R.string.network_error
             }
-            _loadingData.value = false // The loading state has ended so the app is in another state
         }
+        _loadingData.value = false // The loading state has ended so the app is in another state
     }
 
     fun navigateToDetailsElection(idElection: Int) {

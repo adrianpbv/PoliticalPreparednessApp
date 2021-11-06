@@ -11,6 +11,7 @@ import com.example.android.politicalpreparedness.representative.model.Representa
 import com.example.android.politicalpreparedness.utils.Result
 import com.udacity.project4.base.BaseViewModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class RepresentativeViewModel(
     app: Application
@@ -19,32 +20,41 @@ class RepresentativeViewModel(
     private val database = ElectionDatabase.getInstance(app)
     private val repository = Repository(database)
 
+
     private val address = MutableLiveData<Address>()
-    private val representativeResponse = Transformations.switchMap(address) {
+
+    private val _loadingData = MutableLiveData(false)
+    val loadingData: LiveData<Boolean>
+        get() = _loadingData
+
+    private val _networkError = MutableLiveData(false)
+    val networkError: LiveData<Boolean>
+        get() = _networkError
+
+//    val representative = Transformations.map(address) {
+//        viewModelScope.launch {
+//            // get the representative from the network
+//            repository.getRepresentative(it.toString())
+//        }
+//        // observe and update the data
+//        getRepresentativeList(repository.observeRepresentatives())
+//    }
+
+    val representative = Transformations.switchMap(address) {
+        Timber.i("------- Address ----------- %s", it.toString())
+
         viewModelScope.launch {
             // get the representative from the network
             repository.getRepresentative(it.toString())
         }
         // observe and update the data
-        repository.observeRepresentatives()
-    }
-
-
-    val representative: LiveData<List<Representative>> =
-        Transformations.map(representativeResponse) {
-            if (it != null) {
-                getRepresentativeList(it)
-            } else emptyList()
+        Transformations.map(repository.observeRepresentatives()){
+            getRepresentativeList(it)
         }
-    val emptyRepresentativeList = Transformations.map(representativeResponse) {
-        it is Result.Success && !it.isSuccess// data is null so the list is empty
     }
-    val networkError = Transformations.map(representativeResponse) {
-        it is Result.Error
-    }
-    val loadingData = Transformations.map(representativeResponse) {
-        it is Result.Loading
-    }
+
+
+
 
     // Two-way dataBinding, exposing MutableLiveData
     val lineOne = MutableLiveData<String>()
@@ -59,16 +69,42 @@ class RepresentativeViewModel(
     }
 
     /**
-     * Function to fetch representatives from API from a provided address
+     * Function to fetch representatives from the API given a provided address
      */
-    private fun getRepresentativeList(response: Result<RepresentativeResponse>): List<Representative> {
-        return if (response is Result.Success) {
-            response.data.offices.flatMap {
-                it.getRepresentatives(response.data.officials)
+    private fun getRepresentativeList(response: Result<RepresentativeResponse>)
+    : List<Representative>{
+        return when(response){
+            is Result.Loading -> {
+                Timber.i("****** Result Loading *****")
+                _loadingData.value = true
+                _networkError.value = false
+                emptyList()
             }
-        } else {
-            showErrorMessage.postValue(R.string.loading_data_error)
-            emptyList()
+            is Result.Error -> {
+                _loadingData.value = false
+                _networkError.value = true
+                showErrorMessage.value  = R.string.loading_data_error
+                //val error = response.value as Result.Error
+                //Timber.e(error.exception)
+                emptyList()
+            }
+            is Result.Success -> {
+                _loadingData.value = false
+                _networkError.value = false
+                //val representative = response.value as Result.Success
+                Timber.i("****** Result Successful ****** -> %s", response.data.officials.get(0).name)
+                response.data.offices.flatMap {
+                    // flatMap allows to return all the representative lists in a single list
+                    it.getRepresentatives(response.data.officials)
+                }
+            }
+            else -> {
+                _loadingData.value = false
+                _networkError.value = false
+                showErrorMessage.value  = R.string.loading_data_error
+                Timber.e("Null values")
+                emptyList()
+            }
         }
     }
 

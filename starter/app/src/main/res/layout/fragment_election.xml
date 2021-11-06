@@ -21,8 +21,10 @@
             android:id="@+id/upcoming_election_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/padding_medium"
-            android:singleLine="true"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:padding="@dimen/padding_small"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold"
             android:text="@string/upcoming_elections"
             android:textAlignment="center"
             app:layout_constraintTop_toTopOf="parent"
@@ -32,8 +34,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/upcoming_election_recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/margin_small"
+            android:visibility="@{viewModel.errorFromDataBase ? View.GONE : View.VISIBLE}"
             app:electItems="@{viewModel.upcomingElections}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/saved_election_textView"
@@ -42,10 +45,10 @@
             app:layout_constraintTop_toBottomOf="@+id/upcoming_election_textView"
             app:layout_constraintVertical_bias="0.0"
             tools:itemCount="4"
-            tools:listitem="@layout/election_item"/>
+            tools:listitem="@layout/election_item" />
 
-<!--                    android:visibility="@{viewModel.errorFromDataBase ? View.GONE : View.VISIBLE}"
--->
+        <!--
+        -->
 
         <!-- TODO: Add Saved Election Recycler and Header -->
 
@@ -53,10 +56,9 @@
             android:id="@+id/saved_election_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
-            android:layout_marginBottom="@dimen/margin_normal"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold"
+            android:layout_margin="@dimen/margin_small"
             android:padding="@dimen/padding_medium"
             android:singleLine="true"
             android:text="@string/saved_elections"
@@ -65,14 +67,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.51"/>
+            app:layout_constraintVertical_bias="0.51" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/saved_election_recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_margin="@dimen/margin_normal"
-            android:visibility="gone"
+            android:visibility="@{viewModel.emptySavedElectionTable ? View.GONE : View.VISIBLE}"
+            app:electItems="@{viewModel.savedElections}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -80,10 +83,9 @@
             app:layout_constraintTop_toBottomOf="@+id/saved_election_textView"
             app:layout_constraintVertical_bias="0.0"
             tools:itemCount="4"
-            tools:listitem="@layout/election_item"/>
+            tools:listitem="@layout/election_item" />
 
-<!--        android:visibility="@{viewModel.emptySavedElectionList ? View.GONE : View.VISIBLE}"
-            app:electItems="@{viewModel.savedElections}"-->
+        <!--        -->
 
 
         <androidx.constraintlayout.widget.Group
@@ -92,8 +94,7 @@
             android:layout_height="wrap_content"
             android:visibility="@{viewModel.loadingData || viewModel.errorFromDataBase || viewModel.connectionError ? View.GONE : View.VISIBLE}"
             app:constraint_referenced_ids="upcoming_election_textView,upcoming_election_recyclerView,
-            saved_election_textView, saved_election_recyclerView,
-            empty_saved_election_list_img" />
+            saved_election_textView, saved_election_recyclerView" />
 
         <ImageView
             android:id="@+id/db_connection_error_img"
@@ -106,7 +107,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/gray_50"/>
+            app:tint="@color/gray_50" />
 
         <ImageView
             android:id="@+id/network_connection_error_img"
@@ -132,18 +133,24 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/empty_saved_election_list_img"
+            android:id="@+id/empty_saved_election_table_vote_info"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:fadeVisible="@{viewModel.emptySavedElectionList}"
             android:gravity="center"
             android:src="@drawable/noun_file_3411733"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:fadeVisible="@{viewModel.emptySavedElectionTable}"
+            android:contentDescription="@string/election_info"
             app:layout_constraintDimensionRatio="0.8:3.5"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/saved_election_textView"
-            app:tint="@color/gray_50" />
+            app:tint="@color/grey_60"
+            />
+
+<!--            app:layout_constraintDimensionRatio="0.8:3.5"
+
+-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

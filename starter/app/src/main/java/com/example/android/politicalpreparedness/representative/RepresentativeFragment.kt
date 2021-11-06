@@ -81,7 +81,8 @@ class RepresentativeFragment : BaseFragment() {
         binding.lifecycleOwner = this
         binding.viewModel = _viewModel
 
-        setupListAdapter()
+        listAdapter = RepresentativeListAdapter()
+        binding.representativeRecyclerView.adapter = listAdapter
 
         //Button listeners for field and location search
         binding.buttonSearch.setOnClickListener {
@@ -126,7 +127,7 @@ class RepresentativeFragment : BaseFragment() {
      */
     @SuppressLint("MissingPermission")
     fun checkDeviceLocationAndGetLocation() {
-        // check that the device's location is on if not show a dialog to activate it.
+        // check if the device's location is on, otherwise show a dialog to activate it.
 
         val locationRequest = LocationRequest.create().apply {
             priority = LocationRequest.PRIORITY_LOW_POWER
@@ -167,6 +168,7 @@ class RepresentativeFragment : BaseFragment() {
                         _viewModel.searchRepresentative(geoCodeLocation(location))
                     }
                     .addOnFailureListener { exception ->
+                        _viewModel.showErrorMessage.postValue(R.string.get_current_location_error)
                         Timber.e(exception)
                         _viewModel.showErrorMessage.value = R.string.get_current_location_error
                     }
@@ -197,18 +199,8 @@ class RepresentativeFragment : BaseFragment() {
         }
     }
 
-    private fun setupListAdapter() {
-        val viewModel = binding.viewModel
-        if (viewModel != null) {
-            listAdapter = RepresentativeListAdapter()
-            binding.representativeRecyclerView.adapter = listAdapter
-        } else {
-            Timber.w("ViewModel not initialized when attempting to set up adapter.")
-        }
-    }
-
     /**
-     * Suggest to the user to grant the location permission to improve the experience with the app
+     * Suggest to the user to grant the location permission to use this functionality within the app
      */
     private fun showSnackBarAppSettings() {
         Snackbar.make(
