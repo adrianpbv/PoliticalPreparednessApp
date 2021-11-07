@@ -12,7 +12,6 @@ import com.example.android.politicalpreparedness.repository.Repository
 import com.example.android.politicalpreparedness.utils.Result
 import com.udacity.project4.base.BaseViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class VoterInfoViewModel(
     app: Application,
@@ -83,6 +82,9 @@ class VoterInfoViewModel(
     val isLoadingDataFromDBase: LiveData<Boolean>
         get() = _isLoadingDataFromDBase
 
+    /**
+     * Get the election by its id and determine the state of the query
+     */
     fun getElectionFromDataBase(electionDB: Result<Election?>): LiveData<Election?> {
         _isLoadingDataFromDBase.value = true // Show a loading progress while the dataBase operation
         // is running and ends up in one state(Error or Success)
@@ -99,22 +101,10 @@ class VoterInfoViewModel(
         return electionResult
     }
 
-    fun getElectionInfUrl(): String? {
-        val voteInformation = voteInfo.value
-        if (voteInformation is Result.Success) {
-            return voteInformation.data.state!![0].electionAdministrationBody.electionInfoUrl
-        }
-        return null
-    }
-
-    fun getBallotInfoUrl(): String? {
-        val voteInformation = voteInfo.value
-        if (voteInformation is Result.Success) {
-            return voteInformation.data.state!![0].electionAdministrationBody.ballotInfoUrl
-        }
-        return null
-    }
-
+    /**
+     * Manage the state of the election selected by the user, set it as a followed election if
+     * it was unfollowed previously, otherwise the opposite
+     */
     fun handleSavedElections() {
         if (isSaved.value == true) {
             unsaveElection()
@@ -122,29 +112,22 @@ class VoterInfoViewModel(
             saveElection()
     }
 
-    //TODO: Add var and methods to save and remove elections to local database
+    /**
+     * Save the current election into the db
+     */
     fun saveElection() {
         viewModelScope.launch {
             repository.setElectionAsSaved(electionId)
         }
     }
 
+    /**
+     * Delete the current election from the db
+     */
     fun unsaveElection() {
         viewModelScope.launch {
             repository.deleteSavedElection(electionId)
         }
-    }
-
-    fun checkPopulatedData() {
-        Timber.i("Election name: %s", election.value?.name)
-        Timber.i("Election Id: %s", election.value?.id)
-        Timber.i(" ****** Testing the State ******")
-        Timber.i("ElectionInfoUrl name: %s", electionAdministrationBody.value?.electionInfoUrl)
-        Timber.i(
-            "Election State name: %s",
-            electionAdministrationBody.value?.physicalAddress?.state
-        )
-        Timber.i("AVAILABLE ADDRESS -->> %s", physicalAddress.value == null)
     }
 }
 

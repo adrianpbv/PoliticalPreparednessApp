@@ -3,234 +3,72 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- A transition describes an animation via start and end state -->
+
     <Transition
         app:constraintSetEnd="@+id/end"
         app:constraintSetStart="@+id/start"
-        app:duration="2000">
+        app:duration="1000">
         <OnClick
             app:clickAction="toggle"
             app:targetId="@id/search_title" />
 
         <KeyFrameSet>
+            <!-- Not working -->
+            <KeyAttribute
+                app:drawableEndCompat="@drawable/ic_arrow_down"
+                app:framePosition="0"
+                app:motionTarget="@+id/search_title" />
             <KeyAttribute
                 app:drawableEndCompat="@drawable/ic_arrow_left"
                 app:framePosition="50"
                 app:motionTarget="@+id/search_title" />
+            <KeyAttribute
+                app:drawableEndCompat="@drawable/ic_arrow_up"
+                app:framePosition="100"
+                app:motionTarget="@+id/search_title" />
         </KeyFrameSet>
+        <!--        app:drawableEndCompat="@drawable/ic_arrow_left"-->
     </Transition>
-
 
     <ConstraintSet android:id="@+id/start">
         <Constraint
-            android:id="@+id/search_title"
-            app:drawableEndCompat="@drawable/ic_arrow_down"
+            android:id="@+id/search_representative_cl"
+            android:alpha="0"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/parent" />
 
         <Constraint
-            android:id="@+id/address_line_1"
-            android:alpha="0"
-            android:visibility="gone"
+            android:id="@+id/representative_result_cl"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/search_title" />
-
-        <Constraint
-            android:id="@+id/address_line_2"
-            android:alpha="0"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/address_line_1"  />
-
-        <Constraint
-            android:id="@+id/city"
-            android:alpha="0"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/address_line_2"/>
-
-        <Constraint
-            android:id="@id/state"
-            android:alpha="0"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/city" />
-
-        <Constraint
-            android:id="@+id/zip"
-            android:alpha="0"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/state" />
-
-        <Constraint
-            android:id="@+id/button_search"
-            android:alpha="0"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/button_location"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/zip"  />
-
-        <Constraint
-            android:id="@+id/button_location"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/search_title" />
-
-        <Constraint
-            android:id="@+id/representative_title"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/button_location" />
-
-        <Constraint
-            android:id="@+id/representative_recyclerView"
-            android:alpha="1"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/representative_title"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <Constraint
-            android:id="@+id/progressBar"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/representative_title"
-            app:layout_constraintVertical_bias="0.4"
-            />
-
-        <Constraint
-            android:id="@+id/nw_connection_error_img"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/representative_title"
-            />
-
     </ConstraintSet>
 
     <!-- Constraints to apply at the end of the animation -->
     <ConstraintSet android:id="@+id/end">
         <Constraint
             android:id="@+id/search_title"
-            android:visibility="visible"
-            app:drawableEndCompat="@drawable/ic_arrow_up"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:drawableEndCompat="@drawable/ic_arrow_up" />
 
         <Constraint
-            android:id="@+id/address_line_1"
+            android:id="@+id/search_representative_cl"
             android:alpha="1"
-            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@id/representative_result_cl"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_max="282dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/search_title" />
+            app:layout_constraintTop_toBottomOf="@+id/search_title"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <Constraint
-            android:id="@+id/address_line_2"
-            android:alpha="1"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/address_line_1" />
-
-        <Constraint
-            android:id="@+id/city"
-            android:alpha="1"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/address_line_2" />
-
-        <Constraint
-            android:id="@id/state"
-            android:alpha="1"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/city"
-            />
-
-        <Constraint
-            android:id="@+id/zip"
-            android:alpha="1"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/state" />
-
-        <Constraint
-            android:id="@+id/button_search"
-            android:layout_marginTop="@dimen/margin_small"
-            android:alpha="1"
-            android:visibility="visible"
-            app:layout_constraintEnd_toStartOf="@id/button_location"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/zip"  />
-
-        <Constraint
-            android:id="@+id/button_location"
-            android:alpha="1"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@+id/button_search"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/button_search"
-            app:layout_constraintTop_toTopOf="@+id/button_search"
-            />
-
-        <Constraint
-            android:id="@+id/representative_title"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/button_location" />
-
-        <Constraint
-            android:id="@+id/representative_recyclerView"
-            android:alpha="1"
-            android:visibility="invisible"
+            android:id="@+id/representative_result_cl"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/representative_title"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <Constraint
-            android:id="@+id/progressBar"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/representative_title"
-            app:layout_constraintVertical_bias="0.4"
-            />
-
-        <Constraint
-            android:id="@+id/nw_connection_error_img"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/representative_title"/>
+            app:layout_constraintTop_toBottomOf="@id/search_representative_cl" />
     </ConstraintSet>
 
 </MotionScene>

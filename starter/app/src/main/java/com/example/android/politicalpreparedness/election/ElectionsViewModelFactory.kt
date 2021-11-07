@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-//TODO: Create Factory to generate ElectionViewModel with provided election datasource
 class ElectionsViewModelFactory(
     private val application: Application
     ): ViewModelProvider.Factory  {

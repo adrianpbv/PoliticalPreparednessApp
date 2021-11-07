@@ -29,16 +29,16 @@ data class Election(
     val name: String,
     val electionDay: Date,
     val division: Division
-): Parcelable{
+) : Parcelable {
     fun toEntityDatabase(): ElectionEntity =
         ElectionEntity(
-                id = this.id,
-                name = this.name,
+            id = this.id,
+            name = this.name,
             electionDay = this.electionDay,
             division = this.division
         )
 
-    fun getFormattedDate(): String{
+    fun getFormattedDate(): String {
         return SimpleDateFormat(
             "MMMM dd, yyyy",
             Locale.getDefault()
@@ -47,8 +47,12 @@ data class Election(
 }
 // "yyyy-MMM-dd"
 
+/**
+ * Get an Election's model to use within the app.
+ * Parse the [ElectionEntitiy] into its domain model
+ */
 fun ElectionEntity.toDomainModel(): Election = Election(
-    id= this.id,
+    id = this.id,
     name = this.name,
     electionDay = this.electionDay,
     division = this.division

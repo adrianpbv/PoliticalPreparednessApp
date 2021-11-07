@@ -79,6 +79,4 @@ interface IRepository {
      * Get the representatives by address
      */
     suspend fun getRepresentative(address: String)
-
-    suspend fun getRep(address: String): Result<RepresentativeResponse>
 }

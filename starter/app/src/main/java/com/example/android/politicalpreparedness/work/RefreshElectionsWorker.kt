@@ -10,7 +10,7 @@ import retrofit2.HttpException
 /**
  * Worker for updating the election database with new data from the server
  */
-class RefreshElectionsWorker(appContext: Context, params: WorkerParameters):
+class RefreshElectionsWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
 
     companion object {

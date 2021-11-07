@@ -31,30 +31,16 @@ class RepresentativeViewModel(
     val networkError: LiveData<Boolean>
         get() = _networkError
 
-//    val representative = Transformations.map(address) {
-//        viewModelScope.launch {
-//            // get the representative from the network
-//            repository.getRepresentative(it.toString())
-//        }
-//        // observe and update the data
-//        getRepresentativeList(repository.observeRepresentatives())
-//    }
-
     val representative = Transformations.switchMap(address) {
-        Timber.i("------- Address ----------- %s", it.toString())
-
         viewModelScope.launch {
             // get the representative from the network
             repository.getRepresentative(it.toString())
         }
         // observe and update the data
-        Transformations.map(repository.observeRepresentatives()){
+        Transformations.map(repository.observeRepresentatives()) {
             getRepresentativeList(it)
         }
     }
-
-
-
 
     // Two-way dataBinding, exposing MutableLiveData
     val lineOne = MutableLiveData<String>()
@@ -72,8 +58,8 @@ class RepresentativeViewModel(
      * Function to fetch representatives from the API given a provided address
      */
     private fun getRepresentativeList(response: Result<RepresentativeResponse>)
-    : List<Representative>{
-        return when(response){
+            : List<Representative> {
+        return when (response) {
             is Result.Loading -> {
                 Timber.i("****** Result Loading *****")
                 _loadingData.value = true
@@ -83,7 +69,7 @@ class RepresentativeViewModel(
             is Result.Error -> {
                 _loadingData.value = false
                 _networkError.value = true
-                showErrorMessage.value  = R.string.loading_data_error
+                showErrorMessage.value = R.string.loading_data_error
                 //val error = response.value as Result.Error
                 //Timber.e(error.exception)
                 emptyList()
@@ -92,7 +78,10 @@ class RepresentativeViewModel(
                 _loadingData.value = false
                 _networkError.value = false
                 //val representative = response.value as Result.Success
-                Timber.i("****** Result Successful ****** -> %s", response.data.officials.get(0).name)
+                Timber.i(
+                    "****** Result Successful ****** -> %s",
+                    response.data.officials.get(0).name
+                )
                 response.data.offices.flatMap {
                     // flatMap allows to return all the representative lists in a single list
                     it.getRepresentatives(response.data.officials)
@@ -101,7 +90,7 @@ class RepresentativeViewModel(
             else -> {
                 _loadingData.value = false
                 _networkError.value = false
-                showErrorMessage.value  = R.string.loading_data_error
+                showErrorMessage.value = R.string.loading_data_error
                 Timber.e("Null values")
                 emptyList()
             }

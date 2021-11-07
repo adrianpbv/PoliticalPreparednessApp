@@ -5,7 +5,6 @@ import android.widget.ImageView
 import android.widget.Spinner
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
-import androidx.databinding.InverseBindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -32,7 +31,8 @@ fun fetchImage(imageView: ImageView, src: String?) {
                 RequestOptions()
                     .circleCrop()
                     .placeholder(R.drawable.ic_profile)
-                    .error(R.drawable.ic_profile))
+                    .error(R.drawable.ic_profile)
+            )
             .into(imageView)
         //TODO: Add Glide call to load image and circle crop - user ic_profile as a placeholder and for errors.
     }
@@ -50,6 +50,6 @@ fun Spinner.setNewValue(value: String?) {
     }
 }
 
-inline fun <reified T> toTypedAdapter(adapter: ArrayAdapter<*>): ArrayAdapter<T>{
+inline fun <reified T> toTypedAdapter(adapter: ArrayAdapter<*>): ArrayAdapter<T> {
     return adapter as ArrayAdapter<T>
 }

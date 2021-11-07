@@ -27,7 +27,7 @@ class Repository(private val database: ElectionDatabase) : IRepository {
     private val observeVoteInfo = MutableLiveData<Result<VoterInfoResponse>>()
 
     /**
-     * Refresh the elections in the dataBase with data from the network
+     * Refresh the [Election]s in the dataBase with data from the network
      */
     override suspend fun refreshElections() {
         withContext(Dispatchers.IO) {
@@ -37,7 +37,7 @@ class Repository(private val database: ElectionDatabase) : IRepository {
     }
 
     /**
-     * Get LiveData with all the Elections from the database
+     * Get LiveData with all the [Election]s from the database
      */
     override fun getElections(): LiveData<Result<List<Election>>> {
         try {
@@ -53,14 +53,14 @@ class Repository(private val database: ElectionDatabase) : IRepository {
     }
 
     /**
-     * Get an election by its Id
+     * Get an [Election] by its Id
      */
     override fun getElectionById(electionId: Int): LiveData<Result<Election?>> {
         return try {
-            Transformations.map(database.electionDao.getElectionById(electionId)){
+            Transformations.map(database.electionDao.getElectionById(electionId)) {
                 Success(it?.toDomainModel())
             }
-        }catch (exc: Exception){
+        } catch (exc: Exception) {
             Timber.e(exc)
             val temp = MutableLiveData<Result<Election?>>()
             temp.value = Result.Error(exc)
@@ -68,6 +68,9 @@ class Repository(private val database: ElectionDatabase) : IRepository {
         }
     }
 
+    /**
+     * Get the number of rows in the [Election] table, is it has 0 values it is empty
+     */
     override suspend fun electionTableEmpty(): Int = database.electionDao.isElectionTableEmpty()
 
     /**
@@ -87,13 +90,13 @@ class Repository(private val database: ElectionDatabase) : IRepository {
      * Get LiveData to know if the savedElectionTable is empty
      */
     override fun isSavedElectionTableEmpty(): LiveData<Boolean> =
-        Transformations.map( database.electionDao.isSavedElectionTableEmpty()){
+        Transformations.map(database.electionDao.isSavedElectionTableEmpty()) {
             Timber.i("isSavedElectionTableEmpty Count--> %d", it)
-        it == 0
-    }
+            it == 0
+        }
 
     /**
-     *  Function to delete all the unsaved elections from the database
+     *  Function to delete all the unsaved [Election]s from the database
      */
     override suspend fun deleteUnsavedElections() {
         withContext(Dispatchers.IO) {
@@ -102,7 +105,7 @@ class Repository(private val database: ElectionDatabase) : IRepository {
     }
 
     /**
-     * Function to delete an specific election by its id
+     * Function to delete an specific [Election] by its id
      */
     override suspend fun deleteElectionById(id: Int) {
         withContext(Dispatchers.IO) {
@@ -111,7 +114,7 @@ class Repository(private val database: ElectionDatabase) : IRepository {
     }
 
     /**
-     * Get the elections saved by the user
+     * Get the [Election]s saved by the user
      */
     override fun getSavedElections(): LiveData<Result<List<Election>>> {
         try {
@@ -127,7 +130,7 @@ class Repository(private val database: ElectionDatabase) : IRepository {
     }
 
     /**
-     * Save an election through inserting its id into the saved_table
+     * Save an election by inserting its id into the saved_table
      */
     override suspend fun setElectionAsSaved(id: Int) {
         withContext(Dispatchers.IO) {
@@ -163,16 +166,21 @@ class Repository(private val database: ElectionDatabase) : IRepository {
     override suspend fun getVoterInfo(address: String, electionId: Int) {
         // Update the LiveData while the information is being downloaded from the network.
         observeVoteInfo.value = Result.Loading
-        delay(2000)
         withContext(Dispatchers.IO) {
+            delay(1000)
             try {
                 val response = CivicsApi.retrofitService.getVoterInfo(address, electionId)
                 observeVoteInfo.postValue(
-                    Success(response))
-                Timber.e("Repository Response electionUrl: %s",
-                    response.state?.get(0)?.electionAdministrationBody?.electionInfoUrl)
-                Timber.e("Repository Response State: %s",
-                    response.state?.get(0)?.electionAdministrationBody?.physicalAddress?.state)
+                    Success(response)
+                )
+                Timber.e(
+                    "Repository Response electionUrl: %s",
+                    response.state?.get(0)?.electionAdministrationBody?.electionInfoUrl
+                )
+                Timber.e(
+                    "Repository Response State: %s",
+                    response.state?.get(0)?.electionAdministrationBody?.physicalAddress?.state
+                )
             } catch (errorHttp: HttpException) {
                 observeVoteInfo.postValue(Result.Error(errorHttp))
                 Timber.e(errorHttp)
@@ -191,12 +199,12 @@ class Repository(private val database: ElectionDatabase) : IRepository {
         observeReprensentative
 
     /**
-     * Get the representatives by address
+     * Get the [Representative] by address
      */
     override suspend fun getRepresentative(address: String) {
         observeReprensentative.value = Result.Loading
-        delay(2000)
         withContext(Dispatchers.IO) {
+            delay(1000)
             try {
                 observeReprensentative.postValue(
                     Success(
@@ -214,27 +222,6 @@ class Repository(private val database: ElectionDatabase) : IRepository {
             } catch (exc: Exception) {
                 observeReprensentative.postValue(Result.Error(exc))
                 Timber.e(exc)
-            }
-        }
-    }
-
-    override suspend fun getRep(address: String): Result<RepresentativeResponse>{
-        return withContext(Dispatchers.IO){
-            delay(1000)
-            try {
-                val response = async {
-                    CivicsApi.retrofitService.getRepresentatives(address)
-                }.await()
-                Success(response)
-            }catch (errorHttp: HttpException) {
-                Timber.e(errorHttp)
-                Result.Error(errorHttp)
-            } catch (errorHost: UnknownHostException) {
-                Timber.e(errorHost)
-                Result.Error(errorHost)
-            } catch (exc: Exception) {
-                Timber.e(exc)
-                Result.Error(exc)
             }
         }
     }

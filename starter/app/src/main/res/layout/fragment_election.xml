@@ -13,24 +13,22 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fragment_election_cl"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.example.android.politicalpreparedness.MainActivity">
 
         <TextView
             android:id="@+id/upcoming_election_textView"
+            style="@style/elections_titles"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_normal"
             android:padding="@dimen/padding_small"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold"
             android:text="@string/upcoming_elections"
-            android:textAlignment="center"
             app:layout_constraintTop_toTopOf="parent"
             tools:title="test" />
 
-        <!-- TODO: Add Upcoming Election Recycler and Header -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/upcoming_election_recyclerView"
             android:layout_width="match_parent"
@@ -47,22 +45,14 @@
             tools:itemCount="4"
             tools:listitem="@layout/election_item" />
 
-        <!--
-        -->
-
-        <!-- TODO: Add Saved Election Recycler and Header -->
-
         <TextView
             android:id="@+id/saved_election_textView"
+            style="@style/elections_titles"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold"
             android:layout_margin="@dimen/margin_small"
             android:padding="@dimen/padding_medium"
-            android:singleLine="true"
             android:text="@string/saved_elections"
-            android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,9 +74,6 @@
             app:layout_constraintVertical_bias="0.0"
             tools:itemCount="4"
             tools:listitem="@layout/election_item" />
-
-        <!--        -->
-
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/loading_data"
@@ -136,21 +123,16 @@
             android:id="@+id/empty_saved_election_table_vote_info"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:contentDescription="@string/election_info"
+            android:fadeVisible="@{viewModel.emptySavedElectionTable}"
             android:gravity="center"
             android:src="@drawable/noun_file_3411733"
-            android:fadeVisible="@{viewModel.emptySavedElectionTable}"
-            android:contentDescription="@string/election_info"
-            app:layout_constraintDimensionRatio="0.8:3.5"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="0.8:3.5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/saved_election_textView"
-            app:tint="@color/grey_60"
-            />
-
-<!--            app:layout_constraintDimensionRatio="0.8:3.5"
-
--->
+            app:tint="@color/grey_60" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

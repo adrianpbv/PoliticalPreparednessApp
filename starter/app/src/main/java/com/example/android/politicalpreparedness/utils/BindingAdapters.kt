@@ -67,21 +67,6 @@ fun hideViewIfNoContent(view: View, any: Any?) {
 }
 
 /**
- * Set the toolbar text according to the [Election]
- * If the Election is null or an error occurred the toolbar
- * should show an appropriate state by changing its text and color
- */
-@BindingAdapter("toolbarText")
-fun setToolbarText(toolbar: Toolbar, electionName: String?) {
-    if (electionName != null) {
-        toolbar.title = electionName
-    } else {
-        toolbar.title = toolbar.context.getText(R.string.election_toolbar_error)
-        toolbar.setBackgroundResource(R.color.error_red)
-    }
-}
-
-/**
  * Use this binding adapter to show and hide the views using boolean variables
  */
 @BindingAdapter("android:fadeVisible")
@@ -99,7 +84,6 @@ fun setFadeVisible(view: View, visible: Boolean?) {
                 view.fadeOut()
         }
     }
-    //Timber.i("***** SetFadeVisible %s *****", visible)
 }
 
 @BindingAdapter("hideView")

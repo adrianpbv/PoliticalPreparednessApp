@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- TODO: Add data binding node for Voter Info ViewModel -->
     <data>
 
         <import type="android.view.View" />
@@ -18,7 +17,6 @@
         android:layout_height="match_parent"
         tools:context="com.example.android.politicalpreparedness.MainActivity">
 
-        <!-- TODO: Add title to toolbar -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/election_name"
             android:layout_width="match_parent"
@@ -59,30 +57,24 @@
             android:id="@+id/address_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:hideView="@{!(viewModel.isLoadingDataFromDBase || viewModel.isLoadingDataFromNetwork || viewModel.dataBaseError|| viewModel.networkError)}"
             app:constraint_referenced_ids="election_date, election_date_label ,election_address_label,
             location_name_label, line_one_label, line_two_label, city_election_label, location_name,
              line_one, line_two, city_election, address_linear_layout, information_source_label,
-            election_info_url, ballot_info_url" />
+            election_info_url, ballot_info_url"
+            app:hideView="@{!(viewModel.isLoadingDataFromDBase || viewModel.isLoadingDataFromNetwork || viewModel.dataBaseError|| viewModel.networkError)}" />
 
         <TextView
             android:id="@+id/election_address_label"
-            style="@style/elections_style"
+            style="@style/elections_titles"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
             android:text="@string/address"
-            android:textAlignment="center"
-            android:textSize="17sp"
-            android:textStyle="bold"
             app:addressText="@{viewModel.physicalAddress}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/election_date"
             tools:text="@string/address" />
-
-<!--
--->
 
         <TextView
             android:id="@+id/location_name_label"
@@ -103,11 +95,11 @@
             android:layout_height="0dp"
             android:layout_marginEnd="@dimen/margin_normal"
             android:text="@{viewModel.physicalAddress.toString()}"
+            app:layout_constraintBottom_toBottomOf="@id/location_name_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/vote_info_barrier"
             app:layout_constraintTop_toTopOf="@id/location_name_label"
-            app:layout_constraintBottom_toBottomOf="@id/location_name_label"
-            tools:text="@string/location_name"/>
+            tools:text="@string/location_name" />
 
         <TextView
             android:id="@+id/line_one_label"
@@ -129,11 +121,11 @@
             android:layout_marginStart="@dimen/margin_small"
             android:layout_marginEnd="@dimen/margin_normal"
             android:text="@{viewModel.physicalAddress.line1}"
+            app:layout_constraintBottom_toBottomOf="@id/line_one_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/vote_info_barrier"
             app:layout_constraintTop_toTopOf="@id/line_one_label"
-            app:layout_constraintBottom_toBottomOf="@id/line_one_label"
-            tools:text="@string/line_one"/>
+            tools:text="@string/line_one" />
 
         <TextView
             android:id="@+id/line_two_label"
@@ -155,11 +147,11 @@
             android:layout_marginStart="@dimen/margin_small"
             android:layout_marginEnd="@dimen/margin_normal"
             android:text="@{viewModel.physicalAddress.line2}"
+            app:layout_constraintBottom_toBottomOf="@id/line_two_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/vote_info_barrier"
             app:layout_constraintTop_toTopOf="@id/line_two_label"
-            app:layout_constraintBottom_toBottomOf="@id/line_two_label"
-            tools:text="@string/line_two"/>
+            tools:text="@string/line_two" />
 
         <TextView
             android:id="@+id/city_election_label"
@@ -181,11 +173,11 @@
             android:layout_marginStart="@dimen/margin_small"
             android:layout_marginEnd="@dimen/margin_normal"
             android:text="@{viewModel.physicalAddress.city}"
+            app:layout_constraintBottom_toBottomOf="@id/city_election_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/vote_info_barrier"
             app:layout_constraintTop_toTopOf="@id/city_election_label"
-            app:layout_constraintBottom_toBottomOf="@id/city_election_label"
-            tools:text="City name"/>
+            tools:text="City name" />
 
         <LinearLayout
             android:id="@+id/address_linear_layout"
@@ -255,16 +247,13 @@
 
         <TextView
             android:id="@+id/information_source_label"
-            style="@style/elections_style"
+            style="@style/elections_titles"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_normal"
             android:layout_marginTop="@dimen/margin_large"
             android:layout_marginEnd="@dimen/margin_normal"
             android:text="@string/sources"
-            android:textAlignment="center"
-            android:textSize="17sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/address_linear_layout"
@@ -281,7 +270,6 @@
             android:drawableEnd="@drawable/noun_external_link_2863113"
             android:text="@string/election_info_url"
             android:textAlignment="textStart"
-            android:textColorHighlight="@android:color/holo_blue_dark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/information_source_label" />
@@ -297,7 +285,6 @@
             android:drawableEnd="@drawable/noun_external_link_2863113"
             android:text="@string/election_info_url"
             android:textAlignment="textStart"
-            android:textColorHighlight="@android:color/holo_blue_dark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/election_info_url" />

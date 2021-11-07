@@ -26,7 +26,8 @@ class ElectionsViewModel(application: Application) : BaseViewModel(application) 
     val navigateDetailElections: LiveData<Int?> = _navigateDetailElections
 
     //LiveData for upcoming elections
-    private val upcomingElectionsDbase = repository.getElections()//MutableLiveData<Result<List<Election>>>()
+    private val upcomingElectionsDbase =
+        repository.getElections()//MutableLiveData<Result<List<Election>>>()
 
     val upcomingElections: LiveData<List<Election>> = Transformations.map(upcomingElectionsDbase) {
         if (it is Result.Success) {
@@ -36,12 +37,13 @@ class ElectionsViewModel(application: Application) : BaseViewModel(application) 
     }
 
     //LiveData for saved elections
-    private val savedElectionsDbase = repository.getSavedElections()//MutableLiveData<Result<List<Election>>>()
+    private val savedElectionsDbase =
+        repository.getSavedElections()//MutableLiveData<Result<List<Election>>>()
 
-    val savedElections: LiveData<List<Election>> = Transformations.map(savedElectionsDbase){
-        if (it is Result.Success){
+    val savedElections: LiveData<List<Election>> = Transformations.map(savedElectionsDbase) {
+        if (it is Result.Success) {
             it.data
-        }else
+        } else
             emptyList()
     }
 
@@ -53,10 +55,10 @@ class ElectionsViewModel(application: Application) : BaseViewModel(application) 
     val loadingData: LiveData<Boolean> = _loadingData
 
     val errorFromDataBase: LiveData<Boolean> = Transformations.map(upcomingElectionsDbase) {
-        if(it is Result.Error) {
+        if (it is Result.Error) {
             showErrorMessage.value = R.string.loading_data_error
             true
-        }else false
+        } else false
     }
 
     val emptySavedElectionTable: LiveData<Boolean> = repository.isSavedElectionTableEmpty()
@@ -86,7 +88,7 @@ class ElectionsViewModel(application: Application) : BaseViewModel(application) 
         _navigateDetailElections.value = idElection
     }
 
-    fun navigationDetailElectionCompleted(){
+    fun navigationDetailElectionCompleted() {
         _navigateDetailElections.value = null
     }
 

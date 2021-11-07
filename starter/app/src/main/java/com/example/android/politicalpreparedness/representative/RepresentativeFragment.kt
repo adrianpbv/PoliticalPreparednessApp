@@ -51,7 +51,7 @@ class RepresentativeFragment : BaseFragment() {
             checkDeviceLocationAndGetLocation()
         } else {
             Snackbar.make(
-                binding.root,
+                binding.representativeMotionLayout,
                 R.string.location_required_error,
                 Snackbar.LENGTH_INDEFINITE
             ).setAction(android.R.string.ok) {
@@ -68,8 +68,6 @@ class RepresentativeFragment : BaseFragment() {
         } else showSnackBarAppSettings()
     }
 
-    //TODO: Declare ViewModel
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -84,6 +82,14 @@ class RepresentativeFragment : BaseFragment() {
         listAdapter = RepresentativeListAdapter()
         binding.representativeRecyclerView.adapter = listAdapter
 
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.lifecycleOwner = this
+
         //Button listeners for field and location search
         binding.buttonSearch.setOnClickListener {
             val state = resources.getStringArray(R.array.states)[_viewModel.stateInt.value!!]
@@ -94,7 +100,6 @@ class RepresentativeFragment : BaseFragment() {
         binding.buttonLocation.setOnClickListener {
             getLocation()
         }
-        return binding.root
     }
 
     private fun checkLocationPermissions(): Boolean {
@@ -203,19 +208,21 @@ class RepresentativeFragment : BaseFragment() {
      * Suggest to the user to grant the location permission to use this functionality within the app
      */
     private fun showSnackBarAppSettings() {
-        Snackbar.make(
-            binding.root,
-            R.string.permission_denied,
-            Snackbar.LENGTH_INDEFINITE
-        )
-            .setAction(R.string.settings) {
-                // Displays App settings screen.
-                startActivity(Intent().apply {
-                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                })
-            }.show()
+        if (isAdded) {
+            Snackbar.make(
+                binding.root,
+                R.string.permission_denied,
+                Snackbar.LENGTH_LONG
+            )
+                .setAction(R.string.settings) {
+                    // Displays App settings screen.
+                    startActivity(Intent().apply {
+                        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                        data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    })
+                }.show()
+        }
     }
 
     private fun hideKeyboard() {

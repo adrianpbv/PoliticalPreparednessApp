@@ -2,16 +2,13 @@ package com.example.android.politicalpreparedness.election.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.library.baseAdapters.BR
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.politicalpreparedness.databinding.ElectionItemBinding
-import com.example.android.politicalpreparedness.election.ElectionsViewModel
 import com.example.android.politicalpreparedness.network.models.Election
-import com.example.android.politicalpreparedness.network.models.ElectionEntity
 
-class ElectionListAdapter(private val clickListener: ElectionClickListener):
+class ElectionListAdapter(private val clickListener: ElectionClickListener) :
     ListAdapter<Election, ElectionViewHolder>(ElectionDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ElectionViewHolder {
@@ -22,9 +19,8 @@ class ElectionListAdapter(private val clickListener: ElectionClickListener):
         val item = getItem(position)
         holder.bind(clickListener, item)
     }
-
-    //TODO: Add companion object to inflate ViewHolder (from)
 }
+
 class ElectionViewHolder private constructor(val binding: ElectionItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
@@ -43,6 +39,7 @@ class ElectionViewHolder private constructor(val binding: ElectionItemBinding) :
         }
     }
 }
+
 /**
  * Callback for calculating the diff between two non-null items in a list.
  *
