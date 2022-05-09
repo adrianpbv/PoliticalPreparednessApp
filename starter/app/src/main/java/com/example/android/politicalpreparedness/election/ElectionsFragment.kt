@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.android.politicalpreparedness.R
 import com.example.android.politicalpreparedness.databinding.FragmentElectionBinding
@@ -14,13 +13,12 @@ import com.example.android.politicalpreparedness.election.adapter.ElectionClickL
 import com.example.android.politicalpreparedness.election.adapter.ElectionListAdapter
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class ElectionsFragment : BaseFragment() {
 
-    override val _viewModel by viewModels<ElectionsViewModel>() {
-        ElectionsViewModelFactory(requireContext().applicationContext as Application)
-    }
+    override val _viewModel: ElectionsViewModel by viewModel()
     private lateinit var dataBinding: FragmentElectionBinding
 
     private lateinit var listAdapterOne: ElectionListAdapter

@@ -1,4 +1,7 @@
 package com.example.android.politicalpreparedness.election
+/*
+
+// *** File not needed in this version ***
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -16,3 +19,5 @@ class ElectionsViewModelFactory(
         throw IllegalArgumentException("Unable to construct viewmodel")
     }
 }
+
+ */

@@ -6,9 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.example.android.politicalpreparedness.R
-import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.network.models.Election
-import com.example.android.politicalpreparedness.repository.Repository
+import com.example.android.politicalpreparedness.repository.IRepository
 import com.example.android.politicalpreparedness.utils.Result
 import com.udacity.project4.base.BaseViewModel
 import kotlinx.coroutines.launch
@@ -16,10 +15,13 @@ import timber.log.Timber
 import java.net.UnknownHostException
 
 //TODO: Construct ViewModel and provide election datasource
-class ElectionsViewModel(application: Application) : BaseViewModel(application) {
+class ElectionsViewModel(
+    val app: Application,
+    private val repository: IRepository
+) : BaseViewModel(app) {
 
-    private val database = ElectionDatabase.getInstance(application)
-    private val repository = Repository(database)
+//    private val database = ElectionDatabase.getInstance(application)
+//    private val repository = Repository(database)
 
 
     private val _navigateDetailElections = MutableLiveData<Int?>()
