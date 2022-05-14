@@ -2,7 +2,6 @@ package com.example.android.politicalpreparedness.representative
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
@@ -33,14 +32,13 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.base.BaseFragment
 import timber.log.Timber
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 class RepresentativeFragment : BaseFragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    override val _viewModel by viewModels<RepresentativeViewModel>() {
-        RepresentativeViewModelFactory(requireContext().applicationContext as Application)
-    }
+    override val _viewModel: RepresentativeViewModel by viewModel()
     private lateinit var binding: FragmentRepresentativeBinding
     private lateinit var listAdapter: RepresentativeListAdapter
 

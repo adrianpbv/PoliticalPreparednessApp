@@ -6,6 +6,7 @@ import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.election.ElectionsViewModel
 import com.example.android.politicalpreparedness.repository.IRepository
 import com.example.android.politicalpreparedness.repository.Repository
+import com.example.android.politicalpreparedness.representative.RepresentativeViewModel
 import com.example.android.politicalpreparedness.work.RefreshElectionsWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +44,7 @@ class PoliticalPreparednessApp : Application() {
             // Declaring the viewModels
             viewModel{
                 ElectionsViewModel(get(), get())
+                RepresentativeViewModel(get(), get())
             }
         }
 

@@ -1,6 +1,5 @@
 package com.example.android.politicalpreparedness.election
 
-import android.app.Application
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

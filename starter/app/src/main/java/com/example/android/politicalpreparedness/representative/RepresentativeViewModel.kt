@@ -3,10 +3,9 @@ package com.example.android.politicalpreparedness.representative
 import android.app.Application
 import androidx.lifecycle.*
 import com.example.android.politicalpreparedness.R
-import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.network.models.Address
 import com.example.android.politicalpreparedness.network.models.RepresentativeResponse
-import com.example.android.politicalpreparedness.repository.Repository
+import com.example.android.politicalpreparedness.repository.IRepository
 import com.example.android.politicalpreparedness.representative.model.Representative
 import com.example.android.politicalpreparedness.utils.Result
 import com.udacity.project4.base.BaseViewModel
@@ -14,12 +13,9 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class RepresentativeViewModel(
-    app: Application
+    app: Application,
+    private val repository: IRepository
 ) : BaseViewModel(app) {
-
-    private val database = ElectionDatabase.getInstance(app)
-    private val repository = Repository(database)
-
 
     private val address = MutableLiveData<Address>()
 
@@ -146,16 +142,4 @@ class RepresentativeViewModel(
         zip.value = currentLocation.zip
     }
 
-}
-
-class RepresentativeViewModelFactory(
-    private val app: Application
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(RepresentativeViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return RepresentativeViewModel(app) as T
-        }
-        throw IllegalArgumentException("Unable to construct viewmodel")
-    }
 }

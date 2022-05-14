@@ -14,15 +14,10 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.UnknownHostException
 
-//TODO: Construct ViewModel and provide election datasource
 class ElectionsViewModel(
     val app: Application,
     private val repository: IRepository
 ) : BaseViewModel(app) {
-
-//    private val database = ElectionDatabase.getInstance(application)
-//    private val repository = Repository(database)
-
 
     private val _navigateDetailElections = MutableLiveData<Int?>()
     val navigateDetailElections: LiveData<Int?> = _navigateDetailElections
