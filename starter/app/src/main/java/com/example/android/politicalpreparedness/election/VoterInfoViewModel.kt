@@ -3,23 +3,20 @@ package com.example.android.politicalpreparedness.election
 import android.app.Application
 import androidx.lifecycle.*
 import com.example.android.politicalpreparedness.R
-import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.network.models.Address
 import com.example.android.politicalpreparedness.network.models.AdministrationBody
 import com.example.android.politicalpreparedness.network.models.Election
 import com.example.android.politicalpreparedness.network.models.State
-import com.example.android.politicalpreparedness.repository.Repository
+import com.example.android.politicalpreparedness.repository.IRepository
 import com.example.android.politicalpreparedness.utils.Result
 import com.udacity.project4.base.BaseViewModel
 import kotlinx.coroutines.launch
 
 class VoterInfoViewModel(
     app: Application,
+    private val repository: IRepository,
     private val electionId: Int
 ) : BaseViewModel(app) {
-
-    private val database = ElectionDatabase.getInstance(app)
-    private val repository = Repository(database)
 
     val isSaved: LiveData<Boolean> =
         Transformations.map(repository.isTheElectionSaved(electionId)) {
@@ -128,18 +125,5 @@ class VoterInfoViewModel(
         viewModelScope.launch {
             repository.deleteSavedElection(electionId)
         }
-    }
-}
-
-class VoterInfoViewModelFactory(
-    private val application: Application,
-    private val electionId: Int
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(VoterInfoViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return VoterInfoViewModel(application, electionId) as T
-        }
-        throw IllegalArgumentException("Unable to construct viewmodel")
     }
 }

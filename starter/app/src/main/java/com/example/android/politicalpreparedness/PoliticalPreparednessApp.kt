@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.work.*
 import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.election.ElectionsViewModel
+import com.example.android.politicalpreparedness.election.VoterInfoViewModel
 import com.example.android.politicalpreparedness.repository.IRepository
 import com.example.android.politicalpreparedness.repository.Repository
 import com.example.android.politicalpreparedness.representative.RepresentativeViewModel
@@ -16,6 +17,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.module
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -44,7 +46,12 @@ class PoliticalPreparednessApp : Application() {
             // Declaring the viewModels
             viewModel{
                 ElectionsViewModel(get(), get())
+            }
+            viewModel{
                 RepresentativeViewModel(get(), get())
+            }
+            viewModel{
+                (electId: Int) ->  VoterInfoViewModel(get(),get(), electionId = electId)
             }
         }
 

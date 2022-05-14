@@ -7,18 +7,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.example.android.politicalpreparedness.R
 import com.example.android.politicalpreparedness.databinding.FragmentVoterInfoBinding
 import com.udacity.project4.base.BaseFragment
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.ParametersDefinition
+import org.koin.core.parameter.ParametersHolder
+import org.koin.core.parameter.parametersOf
 
 
 class VoterInfoFragment : BaseFragment() {
     private lateinit var voterInfoBinding: FragmentVoterInfoBinding
     private val args: VoterInfoFragmentArgs by navArgs()
-
-    override lateinit var _viewModel: VoterInfoViewModel
+    override val _viewModel: VoterInfoViewModel by viewModel{ parametersOf(args.argElectionId)}
 
 
     override fun onCreateView(
@@ -36,9 +38,6 @@ class VoterInfoFragment : BaseFragment() {
 
         voterInfoBinding.lifecycleOwner = this
 
-        val viewModelFactory =
-            VoterInfoViewModelFactory(requireActivity().application, args.argElectionId)
-        _viewModel = ViewModelProvider(this, viewModelFactory).get(VoterInfoViewModel::class.java)
         voterInfoBinding.viewModel = _viewModel
 
         /**
