@@ -10,7 +10,7 @@ import com.example.android.politicalpreparedness.network.models.SavedElectionEnt
 
 @Database(
     entities = [ElectionEntity::class, SavedElectionEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

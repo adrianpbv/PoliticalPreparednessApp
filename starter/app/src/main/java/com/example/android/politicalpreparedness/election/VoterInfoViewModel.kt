@@ -11,6 +11,7 @@ import com.example.android.politicalpreparedness.repository.IRepository
 import com.example.android.politicalpreparedness.utils.Result
 import com.udacity.project4.base.BaseViewModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class VoterInfoViewModel(
     app: Application,
@@ -33,7 +34,7 @@ class VoterInfoViewModel(
         it?.let {
             // If an error from the database happened so the election will be null and this is not executed
             // Only the icon error from the dataBase is shown.
-            val address = it.division.state.plus(", " + it.division.country)
+            val address = it.division.getAddress()
             viewModelScope.launch {
                 repository.getVoterInfo(
                     address,

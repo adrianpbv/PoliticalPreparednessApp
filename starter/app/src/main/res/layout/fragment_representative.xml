@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- TODO: Add data binding node -->
+    <!-- Add data binding node -->
     <data>
 
         <import type="android.view.View" />
@@ -13,7 +13,7 @@
             type="com.example.android.politicalpreparedness.representative.RepresentativeViewModel" />
     </data>
 
-    <!-- TODO: Add motion scene to hide form on vertical scroll. -->
+    <!-- Add motion scene to hide form on vertical scroll. -->
 
     <androidx.constraintlayout.motion.widget.MotionLayout
         android:id="@+id/representative_motionLayout"
@@ -21,9 +21,6 @@
         android:layout_height="match_parent"
         app:layoutDescription="@xml/motion_representative">
 
-        <!--        <androidx.constraintlayout.motion.widget.MotionLayout
-        app:layoutDescription="@xml/motion_representative"
--->
         <TextView
             android:id="@+id/search_title"
             style="@style/elections_titles"
@@ -39,7 +36,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/search_representative_cl"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            tools:visibility="gone">
 
             <EditText
                 android:id="@+id/address_line_1"

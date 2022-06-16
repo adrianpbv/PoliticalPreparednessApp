@@ -15,17 +15,15 @@
         <KeyFrameSet>
             <!-- Not working -->
             <KeyAttribute
-                app:drawableEndCompat="@drawable/ic_arrow_down"
-                app:framePosition="0"
-                app:motionTarget="@+id/search_title" />
-            <KeyAttribute
                 app:drawableEndCompat="@drawable/ic_arrow_left"
                 app:framePosition="50"
                 app:motionTarget="@+id/search_title" />
+
             <KeyAttribute
                 app:drawableEndCompat="@drawable/ic_arrow_up"
                 app:framePosition="100"
                 app:motionTarget="@+id/search_title" />
+
         </KeyFrameSet>
         <!--        app:drawableEndCompat="@drawable/ic_arrow_left"-->
     </Transition>
@@ -55,9 +53,8 @@
         <Constraint
             android:id="@+id/search_representative_cl"
             android:alpha="1"
-            app:layout_constraintBottom_toTopOf="@id/representative_result_cl"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_max="282dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/search_title"
             app:layout_constraintVertical_bias="0"

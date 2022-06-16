@@ -173,14 +173,6 @@ class Repository(private val database: ElectionDatabase) : IRepository {
                 observeVoteInfo.postValue(
                     Success(response)
                 )
-                Timber.e(
-                    "Repository Response electionUrl: %s",
-                    response.state?.get(0)?.electionAdministrationBody?.electionInfoUrl
-                )
-                Timber.e(
-                    "Repository Response State: %s",
-                    response.state?.get(0)?.electionAdministrationBody?.physicalAddress?.state
-                )
             } catch (errorHttp: HttpException) {
                 observeVoteInfo.postValue(Result.Error(errorHttp))
                 Timber.e(errorHttp)
@@ -190,6 +182,7 @@ class Repository(private val database: ElectionDatabase) : IRepository {
                 Timber.e(errorHost, "Error message: %s", errorHost.message)
             } catch (error: Exception) {
                 observeVoteInfo.postValue(Result.Error(error))
+                println("HELLO ERROR!! ${error.message}")
                 Timber.e(error, "Error message: %s", error.message)
             }
         }
