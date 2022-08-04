@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.android.politicalpreparedness.network.models.ElectionEntity
 import com.example.android.politicalpreparedness.network.models.SavedElectionEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ElectionDao {
@@ -17,7 +18,7 @@ interface ElectionDao {
 
     // Select all election query
     @Query("SELECT * FROM election_table")
-    fun getAllElections(): LiveData<List<ElectionEntity>>
+    fun getAllElections(): Flow<List<ElectionEntity>> // it's main-safe this runs on the Room.Executors
 
     // Select single election query
     @Query("SELECT * FROM election_table WHERE id = :electionId")

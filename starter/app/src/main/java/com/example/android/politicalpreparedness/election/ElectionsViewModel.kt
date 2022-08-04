@@ -1,15 +1,13 @@
 package com.example.android.politicalpreparedness.election
 
 import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.android.politicalpreparedness.R
 import com.example.android.politicalpreparedness.network.models.Election
 import com.example.android.politicalpreparedness.repository.IRepository
 import com.example.android.politicalpreparedness.utils.Result
 import com.udacity.project4.base.BaseViewModel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.net.UnknownHostException
@@ -23,15 +21,23 @@ class ElectionsViewModel(
     val navigateDetailElections: LiveData<Int?> = _navigateDetailElections
 
     //LiveData for upcoming elections
-    private val upcomingElectionsDbase =
-        repository.getElections()//MutableLiveData<Result<List<Election>>>()
+    val upcomingElectionsDB = repository.getElections()
+        .map {
+            if (it is Result.Success)
+                it.data
+            else {
+                return@map emptyList()
+            }
+        }.asLiveData()
 
-    val upcomingElections: LiveData<List<Election>> = Transformations.map(upcomingElectionsDbase) {
-        if (it is Result.Success) {
-            it.data
-        } else
-            emptyList()
-    }
+    val errorFromDataBase = repository.getElections()
+        .map {
+            if (it is Result.Error) {
+                showErrorMessage.value = R.string.loading_data_error
+                true
+            } else false
+        }.asLiveData()
+
 
     //LiveData for saved elections
     private val savedElectionsDbase =
@@ -51,12 +57,8 @@ class ElectionsViewModel(
     private val _loadingData = MutableLiveData<Boolean>()
     val loadingData: LiveData<Boolean> = _loadingData
 
-    val errorFromDataBase: LiveData<Boolean> = Transformations.map(upcomingElectionsDbase) {
-        if (it is Result.Error) {
-            showErrorMessage.value = R.string.loading_data_error
-            true
-        } else false
-    }
+
+
 
     val emptySavedElectionTable: LiveData<Boolean> = repository.isSavedElectionTableEmpty()
 
@@ -67,7 +69,9 @@ class ElectionsViewModel(
             try {
                 // refresh the database with new upcoming election
                 repository.refreshElections()
-            } catch (error: UnknownHostException) {
+
+
+                } catch (error: UnknownHostException) {
                 // catching the network error in the viewModel to show an informative error message
                 Timber.e(error)
                 _connectionError.value = repository.isElectionTableEmpty() == 0

@@ -9,10 +9,8 @@ import com.example.android.politicalpreparedness.network.models.*
 import com.example.android.politicalpreparedness.utils.Result
 import com.example.android.politicalpreparedness.utils.Result.Success
 import com.example.android.politicalpreparedness.utils.asSavedElectionEntity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import retrofit2.HttpException
 import timber.log.Timber
 import java.net.UnknownHostException
@@ -21,10 +19,16 @@ import java.net.UnknownHostException
 /**
  * Repository that communicates with the NetworkApi and the database
  */
-class Repository(private val database: ElectionDatabase) : IRepository {
+class Repository(
+    private val database: ElectionDatabase,
+    private val repoDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : IRepository {
 
     private val observeReprensentative = MutableLiveData<Result<RepresentativeResponse>>()
     private val observeVoteInfo = MutableLiveData<Result<VoterInfoResponse>>()
+
+    private val _isElectionFlowEmpty = MutableStateFlow(false)
+    val isElectionFlowEmpty: StateFlow<Boolean> = _isElectionFlowEmpty
 
     /**
      * Refresh the [Election]s in the dataBase with data from the network
@@ -39,18 +43,26 @@ class Repository(private val database: ElectionDatabase) : IRepository {
     /**
      * Get LiveData with all the [Election]s from the database
      */
-    override fun getElections(): LiveData<Result<List<Election>>> {
-        try {
-            return Transformations.map(database.electionDao.getAllElections()) {
-                Success(it.asDomainModel()) // data is a list of Elections
-            }
-        } catch (exception: Exception) {
-            Timber.e(exception)
-            val elections = MutableLiveData<Result<List<Election>>>()
-            elections.value = Result.Error(exception)
-            return elections
+    override fun getElections(): Flow<Result<List<Election>>> {
+        return try {
+            database.electionDao.getAllElections()
+                .map { Success(it.asDomainModel())}
+                .flowOn(Dispatchers.IO)
+        }catch (exc : Exception){
+            Timber.e(exc)
+            flowOf(Result.Error(exc))
         }
     }
+
+    /*
+    * Get a Flow to share between several collector,
+    * [WhileSubscribed] sharing policy is used to cancel the upstream
+    *  flow when there are no collectors
+     */
+    val electionSharedFlow = database.electionDao.getAllElections().shareIn(
+        scope = CoroutineScope(repoDispatcher),
+        SharingStarted.WhileSubscribed(5000)
+    )
 
     /**
      * Get an [Election] by its Id
@@ -72,6 +84,7 @@ class Repository(private val database: ElectionDatabase) : IRepository {
      * Get the number of rows in the [Election] table, is it has 0 values it is empty
      */
     override suspend fun electionTableEmpty(): Int = database.electionDao.isElectionTableEmpty()
+
 
     /**
      * Function that determines whether there are elections in the database or not

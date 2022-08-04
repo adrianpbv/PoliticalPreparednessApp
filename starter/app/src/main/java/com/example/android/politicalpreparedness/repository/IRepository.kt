@@ -5,6 +5,7 @@ import com.example.android.politicalpreparedness.network.models.Election
 import com.example.android.politicalpreparedness.network.models.RepresentativeResponse
 import com.example.android.politicalpreparedness.network.models.VoterInfoResponse
 import com.example.android.politicalpreparedness.utils.Result
+import kotlinx.coroutines.flow.Flow
 
 interface IRepository {
     /**
@@ -13,9 +14,9 @@ interface IRepository {
     suspend fun refreshElections()
 
     /**
-     * Get LiveData with all the Elections from the database
+     * Get a Flow with all the Elections from the database
      */
-    fun getElections(): LiveData<Result<List<Election>>>
+    fun getElections(): Flow<Result<List<Election>>>
 
     /**
      * Get an election by its Id
